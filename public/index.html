@@ -384,6 +384,10 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
 .trade-chip{border:1.5px solid var(--gray-mid);border-radius:100px;padding:8px 14px;font-size:.84rem;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .15s;user-select:none}
 .trade-chip:hover{border-color:var(--blue)}
 .trade-chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.trade-chip.popular{font-size:.88rem;padding:10px 16px}
+.ob-section{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.82rem;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px}
+.ob-foot{font-size:.8rem;color:var(--gray);text-align:center;margin-top:14px;line-height:1.5}
+.ob-more{background:none;border:none;color:var(--blue);font-weight:600;font-size:.88rem;cursor:pointer;padding:4px 0;margin-bottom:8px}
 .check-row{display:flex;align-items:center;gap:10px;margin-bottom:15px;cursor:pointer}
 .check-row input{width:18px;height:18px;accent-color:var(--blue)}
 .check-row span{font-size:.9rem;color:var(--ink2)}
@@ -406,7 +410,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
       <ul class="nav-links">
         <li><a href="#categories">Browse Services</a></li>
         <li><a href="#how">How It Works</a></li>
-        <li><a href="#pros">For Pros</a></li>
+        <li><a href="#pros" onclick="event.preventDefault();joinAsPro()">For Pros</a></li>
         <li><a href="#projects">Popular Projects</a></li>
         <li><a href="savings.html">See Your Savings</a></li>
       </ul>
@@ -621,7 +625,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
             <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Max 4 pros per request</strong> — no 8-way bidding wars or resold leads.</span></div>
             <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Founding pros keep 90%+</strong> — 10% on new customers, repeat work free for life.</span></div>
           </div>
-          <a href="#" class="btn-white" onclick="event.preventDefault();setSignupRole('pro');openModal('signupModal')">Join free as a Founding Pro<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="#" class="btn-white" onclick="event.preventDefault();joinAsPro()">Join free as a Founding Pro<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           <a href="savings.html" style="display:inline-block;margin-left:18px;color:#9cc2ff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem;border-bottom:1.5px solid rgba(156,194,255,.4);padding-bottom:2px">Calculate your savings →</a>
         </div>
         <div class="compare-card">
@@ -729,7 +733,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
         <h5>Company</h5>
         <ul>
           <li><a href="#">About Us</a></li>
-          <li><a href="#pros">For Pros</a></li>
+          <li><a href="#pros" onclick="event.preventDefault();joinAsPro()">For Pros</a></li>
           <li><a href="#how">How It Works</a></li>
           <li><a href="#">Careers</a></li>
           <li><a href="#">Contact</a></li>
@@ -779,8 +783,8 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
   <div class="modal">
     <button class="modal-close" onclick="closeModal('signupModal')">✕</button>
     <div class="modal-logo"><span class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 3 9v12h6v-7h6v7h6V9z" fill="white"/></svg></span>Housio</div>
-    <h3>Create your account</h3>
-    <p class="modal-sub">Free to join. No credit card required.</p>
+    <h3 id="signupTitle">Create your account</h3>
+    <p class="modal-sub" id="signupSub">Free to join. No credit card required.</p>
     <div class="role-toggle">
       <div class="role-opt active" data-role="homeowner" onclick="setSignupRole('homeowner')">
         <span class="ro-emoji">🏠</span><div class="ro-label">I'm a Homeowner</div><div class="ro-sub">Hire local pros</div>
@@ -792,7 +796,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
     <div class="field"><label>Full name</label><input id="suName" placeholder="Jane Smith"></div>
     <div class="field"><label>Email</label><input id="suEmail" type="email" placeholder="you@email.com"></div>
     <div class="field"><label>Password</label><input id="suPass" type="password" placeholder="Create a password"></div>
-    <button class="btn-full" onclick="doSignup()">Create Account</button>
+    <button class="btn-full" id="signupBtn" onclick="doSignup()">Create Account</button>
     <div class="modal-alt">Already have an account? <a onclick="closeModal('signupModal');openModal('loginModal')">Log in</a></div>
   </div>
 </div>
@@ -930,6 +934,8 @@ async function geocodeZip(zip) {
 
 // ── All 41 services ───────────────────────────────────────────
 const SERVICES = ['House Cleaning','Vacation Rental Cleaning','Defensible Space & Fire Prep','Plumbing','HVAC','Electrical','Appliance Repair','Roofing','Landscaping','Painting','Handyman','Junk Removal','Movers','Power Washing','Window Washing','Gutter Cleaning','Snow Removal','Pest Control','Carpet Cleaning','Garage Door','Tree Service','Lawn Care','Irrigation & Sprinklers','Fencing','Deck & Patio','Pool & Spa Service','Flooring','Drywall','Tile','Siding','Insulation','Concrete & Masonry','Cabinets & Countertops','Windows & Doors','Solar','Foundation & Waterproofing','Air Duct Cleaning','Locksmith','Home Inspection','Mold Remediation','Security & Smart Home','Interior Design','Chimney & Fireplace'];
+// Quick-pick services shown first (TaskRabbit-style — don't make pros scroll 41 chips).
+const POPULAR_SERVICES = ['House Cleaning','Handyman','Landscaping','Lawn Care','Plumbing','HVAC','Painting','Junk Removal','Power Washing','Snow Removal','Electrical','Roofing'];
 
 // ── State ─────────────────────────────────────────────────────
 let currentUser    = null;  // Supabase auth.User
@@ -1006,6 +1012,24 @@ let signupRole = 'homeowner';
 function setSignupRole(r) {
   signupRole = r;
   document.querySelectorAll('#signupModal .role-opt').forEach(o => o.classList.toggle('active', o.dataset.role === r));
+  const title = document.getElementById('signupTitle');
+  const sub = document.getElementById('signupSub');
+  const btn = document.getElementById('signupBtn');
+  if (r === 'pro') {
+    title.textContent = 'Become a Housio Pro';
+    sub.textContent = 'Free to join · no credit card · live in under 2 minutes.';
+    btn.textContent = 'Create account & continue →';
+  } else {
+    title.textContent = 'Create your account';
+    sub.textContent = 'Free to join. No credit card required.';
+    btn.textContent = 'Create Account';
+  }
+}
+
+// One tap from any "join as pro" CTA → pro signup flow.
+function joinAsPro() {
+  setSignupRole('pro');
+  openModal('signupModal');
 }
 
 // ── Google OAuth ──────────────────────────────────────────────
@@ -1045,7 +1069,8 @@ async function doSignup() {
     // Auto-confirmed — user is immediately logged in
     closeAll();
     toast(`Welcome to Housio, ${name.split(' ')[0]}! 🎉`);
-    setTimeout(openDashboard, 700);
+    if (signupRole === 'pro') setTimeout(openOnboarding, 400);
+    else setTimeout(openDashboard, 700);
   }
 }
 
@@ -1180,102 +1205,97 @@ async function submitProject() {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  PRO ONBOARDING — creates the pros row + pro_trades. Founding
-//  pros are free for life; revenue is a take rate on completed jobs.
+//  PRO ONBOARDING — TaskRabbit-style: one screen, ~90 seconds.
+//  Name comes from signup; payout setup is deferred to first job.
 // ══════════════════════════════════════════════════════════════
-let ob = { step: 1, trades: [], founding: true };
+let ob = { trades: [], founding: true, showAllTrades: false, phone: '', zip: '97701' };
 
 function openOnboarding() {
-  ob = { step: 1, trades: ob.trades || [], founding: true,
-         business_name: '', bio: '', phone: '', website: '',
-         years: '', license: '', insured: false, zip: '', radius: 25 };
-  renderOnboard(); closeModal('dashModal'); openModal('onboardModal');
+  if (!currentUser) { joinAsPro(); return; }
+  ob = {
+    trades: ob.trades || [],
+    founding: true,
+    showAllTrades: false,
+    phone: ob.phone || '',
+    zip: ob.zip || '97701',
+  };
+  renderOnboard();
+  closeModal('dashModal');
+  openModal('onboardModal');
 }
 
 function renderOnboard() {
   const body = document.getElementById('obBody');
-  const dots = `<div class="steps-dots">${[1,2,3].map(n => `<div class="step-dot ${ob.step >= n ? 'active' : ''}"></div>`).join('')}</div>`;
+  const phoneEl = document.getElementById('obPhone');
+  const zipEl = document.getElementById('obZip');
+  if (phoneEl) ob.phone = phoneEl.value;
+  if (zipEl) ob.zip = zipEl.value;
+  const firstName = (currentProfile?.full_name || currentUser?.email || 'Pro').split(' ')[0];
+  const list = ob.showAllTrades ? SERVICES : POPULAR_SERVICES;
+  const chips = list.map(s =>
+    `<div class="trade-chip popular ${ob.trades.includes(s) ? 'on' : ''}" data-s="${esc(s)}">${esc(s)}</div>`
+  ).join('');
 
-  if (ob.step === 1) {
-    body.innerHTML = dots + `<h3>Set up your pro profile</h3>
-      <p class="modal-sub">Tell homeowners about your business. This is what they'll see when you're matched.</p>
-      <div class="field"><label>Business name</label><input id="obName" placeholder="e.g. High Desert Home Services" value="${esc(ob.business_name)}"></div>
-      <div class="field"><label>About your business</label><textarea id="obBio" placeholder="What you do, your experience, what makes you great…">${esc(ob.bio)}</textarea></div>
-      <div class="field-row">
-        <div class="field"><label>Phone</label><input id="obPhone" placeholder="(541) 555-0123" value="${esc(ob.phone)}"></div>
-        <div class="field"><label>Website (optional)</label><input id="obWeb" placeholder="yoursite.com" value="${esc(ob.website)}"></div>
-      </div>
-      <div class="pp-actions"><span></span><button class="btn-full" style="width:auto;padding:13px 30px" id="obNext">Continue →</button></div>`;
-    document.getElementById('obNext').onclick = () => {
-      ob.business_name = val('obName'); ob.bio = val('obBio'); ob.phone = val('obPhone'); ob.website = val('obWeb');
-      if (!ob.business_name) { toast('Add your business name'); return; }
-      ob.step = 2; renderOnboard();
-    };
+  body.innerHTML = `
+    <h3>Hey ${esc(firstName)} — let's get you earning 👋</h3>
+    <p class="modal-sub">Pick what you do and where you work. That's it — you can add photos, bio, and payouts later.</p>
+    <div class="field-row">
+      <div class="field"><label>Mobile number</label><input id="obPhone" type="tel" inputmode="tel" placeholder="(541) 555-0123" value="${esc(ob.phone)}"></div>
+      <div class="field"><label>Your ZIP code</label><input id="obZip" inputmode="numeric" placeholder="97701" value="${esc(ob.zip)}"></div>
+    </div>
+    <div class="ob-section">What do you do? <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink2)">· pick at least one</span></div>
+    <div class="trade-grid" id="obTrades">${chips}</div>
+    ${ob.showAllTrades
+      ? `<button type="button" class="ob-more" id="obToggle">← Show popular only</button>`
+      : `<button type="button" class="ob-more" id="obToggle">+ Show all ${SERVICES.length} services</button>`}
+    <button class="btn-full" id="obSubmit" style="margin-top:8px">Start getting jobs →</button>
+    <p class="ob-foot">Free to join · Founding Pro for life · pay only when a homeowner pays you<br>No subscription · no lead fees · payout setup when you're ready</p>`;
 
-  } else if (ob.step === 2) {
-    body.innerHTML = dots + `<h3>Which services do you offer?</h3>
-      <p class="modal-sub">Pick all that apply — you'll only get matched to projects in these trades.</p>
-      <div class="trade-grid">${SERVICES.map(s => `<div class="trade-chip ${ob.trades.includes(s) ? 'on' : ''}" data-s="${esc(s)}">${esc(s)}</div>`).join('')}</div>
-      <div class="pp-actions"><button class="pp-back" id="obBack">← Back</button><button class="btn-full" style="width:auto;padding:13px 30px" id="obNext">Continue →</button></div>`;
-    body.querySelectorAll('.trade-chip').forEach(c => c.onclick = () => {
-      const s = c.dataset.s;
-      ob.trades.includes(s) ? ob.trades = ob.trades.filter(x => x !== s) : ob.trades.push(s);
-      c.classList.toggle('on');
-    });
-    document.getElementById('obBack').onclick = () => { ob.step = 1; renderOnboard(); };
-    document.getElementById('obNext').onclick = () => { if (!ob.trades.length) { toast('Pick at least one service'); return; } ob.step = 3; renderOnboard(); };
+  body.querySelectorAll('.trade-chip').forEach(c => c.onclick = () => {
+    const s = c.dataset.s;
+    ob.trades.includes(s) ? ob.trades = ob.trades.filter(x => x !== s) : ob.trades.push(s);
+    c.classList.toggle('on');
+  });
+  document.getElementById('obToggle').onclick = () => { ob.showAllTrades = !ob.showAllTrades; renderOnboard(); };
+  document.getElementById('obSubmit').onclick = submitOnboarding;
+}
 
-  } else if (ob.step === 3) {
-    body.innerHTML = dots + `<h3>Service area &amp; verification</h3>
-      <p class="modal-sub">Where do you work, and a few trust details for homeowners.</p>
-      <div class="field-row">
-        <div class="field"><label>Base ZIP code</label><input id="obZip" placeholder="97701" value="${esc(ob.zip)}"></div>
-        <div class="field"><label>Service radius (miles)</label><input id="obRadius" type="number" value="${ob.radius}"></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Years in business</label><input id="obYears" type="number" placeholder="5" value="${esc(ob.years)}"></div>
-        <div class="field"><label>License # (optional)</label><input id="obLicense" placeholder="CCB #123456" value="${esc(ob.license)}"></div>
-      </div>
-      <label class="check-row"><input type="checkbox" id="obInsured" ${ob.insured ? 'checked' : ''}><span>I carry liability insurance</span></label>
-      <div style="background:linear-gradient(150deg,#0d1f2d,#13314a);border-radius:14px;padding:18px;margin:6px 0 16px">
-        <label class="check-row" style="margin:0"><input type="checkbox" id="obFounding" ${ob.founding ? 'checked' : ''} style="accent-color:#5fd99a">
-          <span style="color:#fff;font-weight:600">🔒 Join as a <strong>Founding Pro — free for life</strong>. Only pay a small fee when a homeowner pays you for a completed job (10% on new customers, repeat work free).</span></label>
-      </div>
-      <div class="pp-actions"><button class="pp-back" id="obBack">← Back</button><button class="btn-full" style="width:auto;padding:13px 30px" id="obSubmit">Finish setup →</button></div>`;
-    document.getElementById('obBack').onclick = () => { ob.step = 2; renderOnboard(); };
-    document.getElementById('obSubmit').onclick = submitOnboarding;
-  }
+function showObSuccess() {
+  document.getElementById('obBody').innerHTML = `
+    <div class="success-check">🎉</div>
+    <h3>You're live!</h3>
+    <p class="modal-sub" style="margin-bottom:22px">We'll match you when homeowners near <strong>${esc(ob.zip)}</strong> post jobs in your categories. Set up payouts now or wait until your first booking — either way, you're in.</p>
+    <button class="btn-full" id="obDone">View my jobs</button>
+    <div style="text-align:center;margin-top:14px">
+      <button type="button" class="btn-sm" id="obPayout">Set up payouts (optional)</button>
+    </div>`;
+  document.getElementById('obDone').onclick = () => { closeModal('onboardModal'); openDashboard(); };
+  document.getElementById('obPayout').onclick = () => startConnectOnboarding();
 }
 
 async function submitOnboarding() {
   if (!sb) { toast('Add your Supabase keys to enable pro onboarding.'); return; }
-  ob.zip = val('obZip'); ob.radius = parseInt(val('obRadius') || '25', 10);
-  ob.years = val('obYears'); ob.license = val('obLicense');
-  ob.insured = document.getElementById('obInsured')?.checked;
-  ob.founding = document.getElementById('obFounding')?.checked;
-  if (!ob.zip) { toast('Add your base ZIP'); return; }
+  ob.phone = val('obPhone');
+  ob.zip = val('obZip').replace(/\D/g, '').slice(0, 5);
+  if (!ob.phone) { toast('Add your mobile number — homeowners need to reach you'); return; }
+  if (ob.zip.length < 5) { toast('Enter your 5-digit ZIP code'); return; }
+  if (!ob.trades.length) { toast('Pick at least one service'); return; }
 
   const btn = document.getElementById('obSubmit');
-  btn.textContent = 'Saving…'; btn.disabled = true;
+  btn.textContent = 'Setting you up…'; btn.disabled = true;
 
-  await geocodeZip(ob.zip); // so the pro is locatable by pros_near()
+  await geocodeZip(ob.zip);
 
-  // Upsert the pros row. founding_pro=true → free for life (DB trigger).
-  // verified/verification are auto-set here for the demo so matching
-  // produces job requests; in production this is gated by real verification.
+  const bizName = currentProfile?.full_name || currentUser?.email?.split('@')[0] || 'Housio Pro';
+
   const { data: pro, error } = await sb.from('pros').upsert({
     profile_id: currentUser.id,
-    business_name: ob.business_name,
-    bio: ob.bio,
+    business_name: bizName,
     phone: ob.phone,
-    website: ob.website,
     zip: ob.zip,
-    radius_miles: ob.radius || 25,
-    years_experience: ob.years ? parseInt(ob.years, 10) : null,
-    license_number: ob.license || null,
-    insured: !!ob.insured,
-    founding_pro: !!ob.founding,
-    plan: ob.founding ? 'founding' : 'standard',
+    radius_miles: 25,
+    founding_pro: true,
+    plan: 'founding',
     verified: true,
     verification: 'verified',
     onboarded_at: new Date().toISOString()
@@ -1284,19 +1304,18 @@ async function submitOnboarding() {
   if (error || !pro) {
     console.error('onboarding error:', error);
     toast('Could not save your profile — please try again.');
-    btn.textContent = 'Finish setup →'; btn.disabled = false; return;
+    btn.textContent = 'Start getting jobs →'; btn.disabled = false;
+    return;
   }
 
-  // Sync pro_trades (reset then insert the chosen trades).
   const tradeIds = ob.trades.map(tradeIdFor).filter(Boolean);
   await sb.from('pro_trades').delete().eq('pro_id', pro.id);
   if (tradeIds.length) {
     await sb.from('pro_trades').insert(tradeIds.map(trade_id => ({ pro_id: pro.id, trade_id })));
   }
 
-  closeModal('onboardModal');
-  toast(ob.founding ? 'Welcome, Founding Pro — you\'re in free for life! 🔒' : 'Your pro profile is live!');
-  setTimeout(openDashboard, 600);
+  toast('Welcome, Founding Pro — you\'re in! 🔒');
+  showObSuccess();
 }
 
 // ── Pro subscription checkout (server enforces founding price) ────
@@ -1358,14 +1377,8 @@ async function renderProDash(name) {
   const { data: pro } = await sb.from('pros').select('*').eq('profile_id', currentUser.id).maybeSingle();
 
   if (!pro) {
-    body.innerHTML = `<h3>Welcome, ${esc(name)} 👋</h3>
-      <p class="modal-sub">Set up your pro profile so we can match you with local homeowners. Takes about 2 minutes.</p>
-      <div style="background:linear-gradient(150deg,#0d1f2d,#13314a);border-radius:16px;padding:22px;margin-bottom:18px">
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.06rem;color:#fff;margin-bottom:5px">Join free as a Founding Pro 🔒</div>
-        <p style="color:#aebfce;font-size:.9rem;margin-bottom:15px;line-height:1.5">No subscription. No lead fees. You only pay a small platform fee when a homeowner pays you for a completed job — founding pros keep 90%+.</p>
-        <button class="btn-full" style="background:#fff;color:var(--ink)" id="obStart">Set up my pro profile →</button>
-      </div>`;
-    document.getElementById('obStart').onclick = openOnboarding;
+    closeModal('dashModal');
+    openOnboarding();
     return;
   }
 
