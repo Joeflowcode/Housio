@@ -735,3 +735,259 @@ on conflict (zip) do nothing;
 update zip_geo
    set geo = st_setsrid(st_makepoint(lng, lat), 4326)::geography
  where geo is null and lat is not null and lng is not null;
+
+-- ════════════════════════════════════════════════════════════════
+-- ════════════════════════════════════════════════════════════════
+--  MONETIZATION v2 — "free to join, pay only when you get paid"
+--
+--  The model, in one breath: launch/founding pros are free for life,
+--  leads & messages are FREE for everyone (no pay-per-lead, ever), and
+--  Housio's ONLY revenue is a take rate on jobs that are completed AND
+--  paid on-platform (homeowner → pro via Stripe Connect). We take a
+--  higher rate on the FIRST job with a new customer (that's the intro
+--  we delivered) and a lower rate on repeat work (we already got paid
+--  for the acquisition — this is what keeps pros from leaving).
+--
+--  Leakage control is NOT surveillance (no GPS, no mandatory photo).
+--  It's structural, exactly like TaskRabbit / Airbnb:
+--    • the homeowner's card is authorized at booking and held by us,
+--    • the buyer guarantee + reviews + ranking only apply to on-platform
+--      paid jobs (so the homeowner WANTS to pay through Housio),
+--    • a completion photo is OPTIONAL dispute evidence, never a gate.
+--
+--  Everything below is additive + idempotent — safe to re-run on top
+--  of the schema above. Later function definitions intentionally
+--  REPLACE the earlier ones (founding pricing + lead charging).
+-- ════════════════════════════════════════════════════════════════
+
+-- ── 1. Founding pros are FREE for life ────────────────────────────
+--  Replaces the earlier enforce_pro_pricing(): founding/launch pros
+--  lock at $0 (was $79). The price-lock still guarantees it can only
+--  ever go DOWN on update — so "free for life" is enforced server-side,
+--  not just promised in marketing. Standard pros also have $0 locked
+--  access here; any future paid tier is OPT-IN and would be added
+--  separately, never as a barrier to joining or getting leads.
+create or replace function enforce_pro_pricing()
+returns trigger language plpgsql set search_path = public as $$
+begin
+  if tg_op = 'INSERT' then
+    if new.founding_pro or new.plan = 'founding' then
+      new.founding_pro       := true;
+      new.plan               := 'founding';
+      new.locked_price_cents := 0;      -- free for life
+    else
+      new.plan               := 'standard';
+      new.locked_price_cents := 0;      -- access is free; paid tier is opt-in later
+    end if;
+  else -- UPDATE: founding can never be revoked; locked price can only fall
+    if old.founding_pro then
+      new.founding_pro       := true;
+      new.plan               := 'founding';
+      new.locked_price_cents := least(
+        coalesce(new.locked_price_cents, old.locked_price_cents),
+        old.locked_price_cents);
+    end if;
+  end if;
+  return new;
+end; $$;
+
+-- ── 2. Leads & messages are FREE (kill pay-per-lead) ──────────────
+--  Replaces the earlier handle_new_message(): we KEEP the lead status
+--  transitions (sent → viewed → replied) so the pipeline still reads
+--  correctly, but we NEVER charge the pro for a message. base_lead_price
+--  is left in the trades table for reporting/back-compat only.
+create or replace function handle_new_message()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare v_homeowner uuid;
+begin
+  select pr.homeowner_id into v_homeowner
+  from leads l join projects pr on pr.id = l.project_id
+  where l.id = new.lead_id;
+
+  if new.sender_id = v_homeowner then
+    -- homeowner engaged: advance the lead, but DO NOT charge the pro
+    update leads set status = 'replied'
+     where id = new.lead_id and status in ('sent','viewed');
+  else
+    update leads set status = 'viewed'
+     where id = new.lead_id and status = 'sent';
+  end if;
+  return new;
+end; $$;
+
+-- ── 3. Platform take-rate configuration (single source of truth) ──
+--  Basis points (bps): 1500 = 15.00%. We charge more on a new-customer
+--  job than on repeat work, and founding pros get a permanent discount.
+--  Stored in a 1-row table so you can tune rates without a deploy.
+create table if not exists platform_fees (
+  id                  int  primary key default 1 check (id = 1),
+  first_job_bps       int  not null default 1500,  -- 15% on a NEW customer
+  repeat_bps          int  not null default 500,   -- 5% on repeat work
+  founding_first_bps  int  not null default 1000,  -- founding: 10% on new
+  founding_repeat_bps int  not null default 0,     -- founding: free on repeat
+  updated_at          timestamptz not null default now()
+);
+insert into platform_fees (id) values (1) on conflict (id) do nothing;
+
+-- ── 4. Payment lifecycle columns (authorize → complete → release) ─
+alter table payments add column if not exists is_first_job        boolean;
+alter table payments add column if not exists take_rate_bps       int;
+alter table payments add column if not exists authorized_at       timestamptz; -- card held at booking
+alter table payments add column if not exists completed_at        timestamptz; -- pro marked done
+alter table payments add column if not exists confirmed_at        timestamptz; -- homeowner approved
+alter table payments add column if not exists released_at         timestamptz; -- payout sent to pro
+alter table payments add column if not exists auto_release_at     timestamptz; -- release-by if no response
+alter table payments add column if not exists completion_photo_url text;       -- OPTIONAL evidence only
+alter table payments add column if not exists completion_note     text;
+
+create index if not exists idx_payments_auto_release
+  on payments(auto_release_at) where released_at is null and completed_at is not null;
+
+-- ── 5. Fee + first-job computation ────────────────────────────────
+--  "First job" = no prior SUCCEEDED on-platform payment between this
+--  exact homeowner↔pro pair. Founding pros use the discounted rates.
+create or replace function compute_platform_fee(
+  _homeowner uuid, _pro uuid, _amount_cents int
+) returns table(is_first boolean, bps int, fee_cents int)
+language plpgsql stable security definer set search_path = public as $$
+declare _founding boolean; _first boolean; _bps int; _cfg platform_fees%rowtype;
+begin
+  select * into _cfg from platform_fees where id = 1;
+  select coalesce(founding_pro, false) into _founding from pros where id = _pro;
+
+  _first := not exists (
+    select 1 from payments
+     where homeowner_id = _homeowner and pro_id = _pro and status = 'succeeded'
+  );
+
+  if _founding then
+    _bps := case when _first then _cfg.founding_first_bps else _cfg.founding_repeat_bps end;
+  else
+    _bps := case when _first then _cfg.first_job_bps else _cfg.repeat_bps end;
+  end if;
+
+  return query select _first, _bps, floor(_amount_cents * _bps / 10000.0)::int;
+end; $$;
+
+-- ── 6. Quote accepted → create the HELD payment record ────────────
+--  Extends (does not replace) the booking flow: when a quote is
+--  accepted, we create a payment row in 'requires_payment' with the
+--  fee already computed. The Connect Edge Function reads this row to
+--  authorize/hold the homeowner's card; the webhook flips status as
+--  Stripe confirms. We only insert if one doesn't already exist.
+create or replace function create_payment_on_acceptance()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare _homeowner uuid; _fee record;
+begin
+  if new.status = 'accepted' and old.status is distinct from 'accepted' then
+    select homeowner_id into _homeowner from projects where id = new.project_id;
+
+    if not exists (select 1 from payments where quote_id = new.id) then
+      select * into _fee from compute_platform_fee(_homeowner, new.pro_id, new.amount_cents);
+      insert into payments (
+        project_id, quote_id, homeowner_id, pro_id,
+        amount_cents, platform_fee_cents, take_rate_bps, is_first_job, status
+      ) values (
+        new.project_id, new.id, _homeowner, new.pro_id,
+        new.amount_cents, _fee.fee_cents, _fee.bps, _fee.is_first, 'requires_payment'
+      );
+    end if;
+  end if;
+  return new;
+end; $$;
+
+drop trigger if exists trg_payment_on_acceptance on quotes;
+create trigger trg_payment_on_acceptance
+  after update on quotes
+  for each row execute function create_payment_on_acceptance();
+
+-- ── 7. Completion → confirmation → release ────────────────────────
+--  pro_mark_job_complete: pro taps "done" (photo OPTIONAL). Starts a
+--  3-day auto-release window so the pro is never held hostage.
+create or replace function pro_mark_job_complete(
+  _payment uuid, _photo_url text default null, _note text default null
+) returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not exists (
+    select 1 from payments pay join pros p on p.id = pay.pro_id
+    where pay.id = _payment and p.profile_id = (select auth.uid())
+  ) then
+    raise exception 'not your job';
+  end if;
+
+  update payments
+     set completed_at         = coalesce(completed_at, now()),
+         completion_photo_url  = coalesce(_photo_url, completion_photo_url),
+         completion_note       = coalesce(_note, completion_note),
+         auto_release_at       = coalesce(auto_release_at, now() + interval '3 days')
+   where id = _payment and released_at is null;
+end; $$;
+
+--  homeowner_confirm_job: one-tap approval → marks ready for payout.
+--  The Connect Edge Function / webhook performs the actual transfer
+--  and flips status to 'succeeded'; here we record the confirmation
+--  and stamp released_at so payouts can be captured.
+create or replace function homeowner_confirm_job(_payment uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not exists (
+    select 1 from payments where id = _payment and homeowner_id = (select auth.uid())
+  ) then
+    raise exception 'not your payment';
+  end if;
+
+  update payments
+     set confirmed_at = coalesce(confirmed_at, now()),
+         released_at  = coalesce(released_at, now())
+   where id = _payment and completed_at is not null and released_at is null;
+end; $$;
+
+--  release_due_payments: call on a schedule (pg_cron / Edge Function).
+--  Auto-releases completed jobs the homeowner never disputed once the
+--  window passes — returns the payments to capture via Connect.
+create or replace function release_due_payments()
+returns setof payments language plpgsql security definer set search_path = public as $$
+begin
+  return query
+  update payments
+     set released_at = now()
+   where released_at is null
+     and completed_at is not null
+     and auto_release_at is not null
+     and auto_release_at <= now()
+     and status <> 'refunded'
+  returning *;
+end; $$;
+
+-- ── 8. Reviews are earned, not free — gate to a real paid job ─────
+--  A homeowner can only review a pro they actually paid on-platform.
+--  This makes reviews trustworthy AND gives pros a concrete reason to
+--  keep jobs on Housio: off-platform jobs build no reputation here.
+drop policy if exists "reviews homeowner write" on reviews;
+do $$ begin
+  create policy "reviews homeowner write" on reviews for insert with check (
+    homeowner_id = (select auth.uid())
+    and exists (
+      select 1 from payments pay
+      where pay.homeowner_id = (select auth.uid())
+        and pay.pro_id      = reviews.pro_id
+        and pay.status      = 'succeeded'
+    )
+  );
+exception when duplicate_object then null; end $$;
+
+-- ── 9. Count a completed job when its payment succeeds ────────────
+--  Keeps pros.jobs_count accurate off the real billable event.
+create or replace function bump_jobs_on_payment()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.status = 'succeeded' and old.status is distinct from 'succeeded' then
+    update pros set jobs_count = jobs_count + 1 where id = new.pro_id;
+  end if;
+  return new;
+end; $$;
+
+drop trigger if exists trg_bump_jobs_on_payment on payments;
+create trigger trg_bump_jobs_on_payment
+  after update on payments
+  for each row execute function bump_jobs_on_payment();

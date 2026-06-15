@@ -60,11 +60,13 @@ Deno.serve(async (req) => {
 
         const proId = await proIdForCustomer(sub.customer as string);
 
-        // ── Founding-price enforcement (server-side, $79 for life) ──
-        // The DB is the source of truth for who is founding + their
-        // locked price. If Stripe ever reports a higher price for a
-        // founding pro, we DOWN-CORRECT the subscription back to the
-        // locked amount so the promise can never silently break.
+        // ── Locked-price enforcement (server-side, for life) ────────
+        // Pro access is FREE today, so subscriptions normally won't
+        // exist. This guards a future OPTIONAL paid tier: the DB is the
+        // source of truth for a pro's locked price, and if Stripe ever
+        // reports a higher amount for a founding pro we DOWN-CORRECT the
+        // subscription back to the locked amount so the promise can
+        // never silently break.
         const founding = await foundingLockFor(proId);
         const currentItem = sub.items.data[0];
         const currentAmount = currentItem?.price.unit_amount ?? null;
@@ -106,7 +108,19 @@ Deno.serve(async (req) => {
         break;
       }
 
-      // ── Stripe Connect: homeowner → pro payments ────────────────
+      // ── Connect: card AUTHORIZED & HELD (manual capture) ────────
+      //  Fires when the homeowner confirms the PaymentIntent. The money
+      //  is now held, awaiting job completion + release (capture).
+      case "payment_intent.amount_capturable_updated": {
+        const pi = event.data.object as Stripe.PaymentIntent;
+        await supabase
+          .from("payments")
+          .update({ status: "processing", authorized_at: new Date().toISOString() })
+          .eq("stripe_payment_intent_id", pi.id);
+        break;
+      }
+
+      // ── Connect: homeowner → pro payments (captured / failed) ───
       case "payment_intent.succeeded":
       case "payment_intent.payment_failed":
       case "payment_intent.canceled": {
@@ -115,14 +129,19 @@ Deno.serve(async (req) => {
           event.type === "payment_intent.succeeded" ? "succeeded"
           : event.type === "payment_intent.canceled" ? "canceled"
           : "failed";
+        // On capture success, stamp released_at if the RPC hadn't already.
+        const patch: Record<string, unknown> =
+          status === "succeeded"
+            ? { status, released_at: new Date().toISOString() }
+            : { status };
         await supabase
           .from("payments")
-          .update({ status })
+          .update(patch)
           .eq("stripe_payment_intent_id", pi.id);
+        // jobs_count is bumped by the bump_jobs_on_payment DB trigger when
+        // status flips to 'succeeded', so we do NOT increment it here.
         if (status === "succeeded" && pi.metadata?.project_id) {
-          // Mark the booked job as completed once payment clears.
           await supabase.from("projects").update({ status: "completed" }).eq("id", pi.metadata.project_id);
-          await supabase.rpc("increment_pro_jobs", { _pro: pi.metadata.pro_id }).catch(() => {});
         }
         break;
       }
@@ -158,7 +177,8 @@ async function proIdForCustomer(customerId: string): Promise<string | null> {
   return data?.id ?? null;
 }
 
-// The founding lock that drives server-side $79-for-life enforcement.
+// The founding lock that drives server-side locked-price enforcement
+// (for the optional paid tier; access itself is free).
 async function foundingLockFor(
   proId: string | null,
 ): Promise<{ founding_pro: boolean; locked_price_cents: number | null } | null> {

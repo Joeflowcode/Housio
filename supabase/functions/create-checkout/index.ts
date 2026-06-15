@@ -1,17 +1,18 @@
 // ════════════════════════════════════════════════════════════════
 //  Housio — Create Checkout (Supabase Edge Function)
-//  Starts a Stripe Checkout (subscription mode) for a pro's monthly
-//  plan, and ENFORCES founding pricing server-side:
 //
-//    • A pro flagged founding (pros.founding_pro / plan='founding')
-//      is ALWAYS checked out at their locked_price_cents ($79). The
-//      price the browser asks for is ignored — the DB is the source
-//      of truth, so the $79-for-life promise can't be tampered with.
-//    • Standard pros check out at $149.
+//  MONETIZATION v2: pro access is FREE. Housio does not charge pros a
+//  monthly subscription — revenue comes from a take rate on completed,
+//  on-platform jobs (see stripe-connect). So for any pro whose
+//  locked_price_cents is 0 (which is everyone today), this function
+//  refuses to start a subscription and simply tells the client there's
+//  nothing to pay.
 //
-//  We create the price on the fly from locked_price_cents so a pro's
-//  rate is whatever was permanently locked on their row — never a
-//  hard-coded Price the marketing team could bump later.
+//  The subscription machinery is intentionally LEFT INTACT for a future
+//  OPTIONAL paid tier (premium tools / featured placement). If you ever
+//  set a pro's locked_price_cents > 0, this checks them out at exactly
+//  that locked amount — the DB stays the source of truth, never the
+//  browser — so a founding pro's locked rate can never be tampered with.
 //
 //  Deploy:  supabase functions deploy create-checkout
 //  Secrets: STRIPE_SECRET_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
@@ -56,7 +57,17 @@ Deno.serve(async (req) => {
     if (!pro) return json({ error: "Complete pro onboarding first" }, 400);
 
     // SERVER-SIDE PRICE: trust the DB, not the request body.
-    const unitAmount = pro.founding_pro ? 7900 : (pro.locked_price_cents ?? 14900);
+    const unitAmount = pro.locked_price_cents ?? 0;
+
+    // FREE access (the default for all pros today): no subscription.
+    // You only ever pay a small fee when a homeowner pays you for a job.
+    if (unitAmount <= 0) {
+      return json({
+        free: true,
+        message:
+          "Housio is free for pros — there's no subscription. You only pay a small platform fee when a homeowner pays you for a completed job.",
+      });
+    }
 
     // Reuse or create the Stripe customer, and stamp it on the pro row.
     let customerId = pro.stripe_customer_id;
