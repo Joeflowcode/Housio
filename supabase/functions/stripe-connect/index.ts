@@ -171,8 +171,8 @@ Deno.serve(async (req) => {
 
     // ── Homeowner: confirm done → CAPTURE the held payment ───────
     //  This is the moment the pro actually gets paid and Housio keeps
-    //  its fee. Auto-release (release_due_payments) drives the same
-    //  capture path on a schedule if the homeowner never responds.
+    //  its fee. Auto-release (release-payments Edge Function on a schedule)
+    //  drives the same capture path if the homeowner never responds.
     if (action === "release") {
       const { data: pay } = await admin
         .from("payments")

@@ -942,22 +942,89 @@ begin
    where id = _payment and completed_at is not null and released_at is null;
 end; $$;
 
---  release_due_payments: call on a schedule (pg_cron / Edge Function).
---  Auto-releases completed jobs the homeowner never disputed once the
---  window passes — returns the payments to capture via Connect.
+--  release_due_payments: read-only list for the release-payments Edge
+--  Function (scheduled daily/hourly). Returns held payments past the
+--  auto-release window; the function CAPTUREs each PI via Stripe, then
+--  stamps released_at. Do NOT mark released here — capture must succeed
+--  first (same order as stripe-connect "release").
 create or replace function release_due_payments()
-returns setof payments language plpgsql security definer set search_path = public as $$
-begin
-  return query
-  update payments
-     set released_at = now()
+returns setof payments language sql stable security definer set search_path = public as $$
+  select * from payments
    where released_at is null
      and completed_at is not null
      and auto_release_at is not null
      and auto_release_at <= now()
-     and status <> 'refunded'
-  returning *;
+     and status not in ('refunded', 'failed', 'canceled');
+$$;
+
+--  mark_payment_auto_released: service-role only (Edge Function). Called
+--  after a successful Stripe capture when the homeowner never confirmed.
+create or replace function mark_payment_auto_released(_payment uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  update payments
+     set confirmed_at = coalesce(confirmed_at, now()),
+         released_at  = coalesce(released_at, now())
+   where id = _payment
+     and completed_at is not null
+     and released_at is null;
 end; $$;
+
+-- ════════════════════════════════════════════════════════════════
+--  ANTI-CIRCUMVENTION — mask contact info in messages before booking.
+--  While a project is still pre-booking (status not booked/completed),
+--  phone numbers, emails, and off-platform payment handles are replaced
+--  before the row is stored. After on-platform payment the thread can
+--  show contact info freely.
+-- ════════════════════════════════════════════════════════════════
+create or replace function mask_contact_info(_text text)
+returns text language plpgsql immutable set search_path = public as $$
+declare _out text := coalesce(_text, '');
+begin
+  if _out = '' then return _out; end if;
+
+  -- Email addresses
+  _out := regexp_replace(_out,
+    '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}',
+    '[email hidden]', 'gi');
+
+  -- US phone numbers: (555) 555-5555, 555-555-5555, +1 555 555 5555, etc.
+  _out := regexp_replace(_out,
+    '(\+?1[[:space:].-]?)?(\([0-9]{3}\)|[0-9]{3})[[:space:].-]?[0-9]{3}[[:space:].-]?[0-9]{4}',
+    '[phone hidden]', 'g');
+
+  -- Venmo / Cash App / Zelle / PayPal handles and links
+  _out := regexp_replace(_out,
+    '(venmo|cash[[:space:]]*app|cashapp|zelle|paypal)([[:space:]]*[:@]|[[:space:]]+(is|me|at))?[[:space:]]*[@$]?[\w.-]+',
+    '[payment app hidden]', 'gi');
+  _out := regexp_replace(_out,
+    '(venmo\.com|paypal\.me)/[\w.-]+',
+    '[payment app hidden]', 'gi');
+  _out := regexp_replace(_out,
+    '\$[a-z][\w.-]{2,}',
+    '[payment app hidden]', 'gi');
+
+  return _out;
+end; $$;
+
+create or replace function mask_message_contact_info()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare v_status project_status;
+begin
+  select pr.status into v_status
+  from leads l join projects pr on pr.id = l.project_id
+  where l.id = new.lead_id;
+
+  if v_status is null or v_status not in ('booked', 'completed') then
+    new.body := mask_contact_info(new.body);
+  end if;
+  return new;
+end; $$;
+
+drop trigger if exists trg_mask_message_contact on messages;
+create trigger trg_mask_message_contact
+  before insert on messages
+  for each row execute function mask_message_contact_info();
 
 -- ── 8. Reviews are earned, not free — gate to a real paid job ─────
 --  A homeowner can only review a pro they actually paid on-platform.

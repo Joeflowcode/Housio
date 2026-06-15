@@ -6,7 +6,7 @@
 #
 # Only the Edge Functions config is needed here for deploying. The
 # important bit is per-function `verify_jwt`:
-#   - stripe-webhook / geocode  -> verify_jwt = false  (called by Stripe / the browser pre-auth)
+#   - stripe-webhook / geocode / release-payments -> verify_jwt = false
 #   - create-checkout / stripe-connect -> verify_jwt = true (they verify the caller's Supabase JWT)
 project_id = "housio"
 
@@ -33,3 +33,9 @@ entrypoint = "./functions/create-checkout/index.ts"
 enabled = true
 verify_jwt = true
 entrypoint = "./functions/stripe-connect/index.ts"
+
+# Scheduled cron job — auth is CRON_SECRET or service role in Authorization.
+[functions.release-payments]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/release-payments/index.ts"
