@@ -101,7 +101,7 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 <div class="top">
   <div class="logo"><span class="logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2 3 9v12h6v-7h6v7h6V9z" fill="white"/></svg></span>Housio</div>
   <h1>See exactly how much<br>you <span>save with Housio</span></h1>
-  <p>Less money wasted on bad leads. Lower prices for homeowners. Here's the math.</p>
+  <p>See how much you keep vs. Thumbtack &amp; Angi — free to join, pay only when you get paid.</p>
   <div class="toggle">
     <button id="tabPro" class="active" onclick="switchView('pro')">💼 I'm a Pro</button>
     <button id="tabCust" onclick="switchView('cust')">🏠 I'm a Homeowner</button>
@@ -114,42 +114,46 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
   <div class="view active" id="proView">
     <div class="card">
       <div class="card-tag">Savings Calculator</div>
-      <h2>What are you wasting on Thumbtack &amp; Angi?</h2>
-      <p class="csub">Drag the sliders to match your real numbers and watch your savings update.</p>
+      <h2>What are you wasting on lead-resale sites?</h2>
+      <p class="csub">Drag the sliders to match your real numbers. Housio is free to join — you only pay a small fee when a homeowner pays you for a completed job.</p>
 
       <div class="calc-grid">
         <div class="sliders">
           <div class="slider-row">
-            <label>Leads you buy per month <span class="v" id="vLeads">20</span></label>
+            <label>Leads you buy per month (Thumbtack / Angi) <span class="v" id="vLeads">20</span></label>
             <input type="range" id="sLeads" min="5" max="60" value="20">
           </div>
           <div class="slider-row">
-            <label>Avg. cost per lead (the other guys) <span class="v" id="vCost">$30</span></label>
+            <label>Avg. cost per lead <span class="v" id="vCost">$30</span></label>
             <input type="range" id="sCost" min="15" max="80" value="30">
           </div>
           <div class="slider-row">
-            <label>How often those leads actually reply <span class="v" id="vReply">35%</span></label>
-            <input type="range" id="sReply" min="20" max="70" value="35">
+            <label>Jobs you actually win per month <span class="v" id="vJobs">6</span></label>
+            <input type="range" id="sJobs" min="1" max="30" value="6">
+          </div>
+          <div class="slider-row">
+            <label>Avg. job value <span class="v" id="vJobVal">$350</span></label>
+            <input type="range" id="sJobVal" min="100" max="2000" step="50" value="350">
           </div>
         </div>
 
         <div class="result">
           <div class="rl">You'd save with Housio</div>
-          <div class="big" id="annualSave">$6,252</div>
+          <div class="big" id="annualSave">$5,148</div>
           <div class="per">per year</div>
           <div class="rbreak">
-            <div class="b them"><div class="bn" id="themMo">$600</div><div class="bl">Thumbtack / mo</div></div>
-            <div class="b us"><div class="bn">$79</div><div class="bl">Housio / mo</div></div>
+            <div class="b them"><div class="bn" id="themMo">$600</div><div class="bl">Lead sites / mo</div></div>
+            <div class="b us"><div class="bn" id="usMo">$171</div><div class="bl">Housio / mo</div></div>
           </div>
         </div>
       </div>
 
       <div class="wasted">
         <span class="we">🔥</span>
-        <div class="wt">On the other platforms you're paying for about <strong id="wastedN">13 dead leads</strong> a month that never even reply — roughly <strong id="wasted$">$390</strong> down the drain. On Housio, <strong>you only pay when a customer actually replies.</strong></div>
+        <div class="wt">On Thumbtack &amp; Angi you pay for <strong id="wastedN">14 leads</strong> you never win — roughly <strong id="wasted$">$420</strong>/mo wasted. On Housio, <strong>joining is free</strong> and you only pay a <strong>10% fee when a homeowner pays you</strong> for a completed job.</div>
       </div>
 
-      <p class="assump">Based on the numbers you enter. Housio shown at the <strong>founding-pro rate of $79/mo</strong> — locked in for life (regular rate $149). Your real savings are usually higher once you count the time you stop wasting on dead leads.</p>
+      <p class="assump">Based on the numbers you enter. Housio shown at the <strong>founding-pro rate: 10% on new customers, repeat jobs free</strong> (standard pros: 15% new / 5% repeat). Your real savings are usually higher once you count dead leads you stop buying.</p>
     </div>
 
     <div class="card">
@@ -160,18 +164,18 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
           <tr><th>What you get</th><th class="them" style="text-align:center">Thumbtack / Angi</th><th class="us-h us" style="text-align:center">Housio</th></tr>
         </thead>
         <tbody>
-          <tr><td>Pay for leads that never reply</td><td class="them">Yes 😣</td><td class="us">Never</td></tr>
-          <tr><td>Same lead sold to…</td><td class="them">8+ pros</td><td class="us">3–4 max</td></tr>
-          <tr><td>Lead pricing</td><td class="them">Variable, rises</td><td class="us">Flat &amp; transparent</td></tr>
-          <tr><td>Refunds on junk/spam leads</td><td class="them">Rare, a fight</td><td class="us">Always</td></tr>
-          <tr><td>Cost at 20 leads/mo</td><td class="them">~$600</td><td class="us">$79 flat</td></tr>
+          <tr><td>Monthly subscription to join</td><td class="them">$79–$149</td><td class="us">Free</td></tr>
+          <tr><td>Pay-per-lead fees</td><td class="them">$15–$80 each</td><td class="us">Never</td></tr>
+          <tr><td>Same request sold to…</td><td class="them">8+ pros</td><td class="us">3–4 max</td></tr>
+          <tr><td>When you pay Housio</td><td class="them">Before you earn</td><td class="us">After you're paid</td></tr>
+          <tr><td>Founding pro keeps</td><td class="them">Varies</td><td class="us">90%+ per job</td></tr>
           <tr><td>Long-term contract</td><td class="them">Sometimes</td><td class="us">None</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="cta">
-      <a href="index.html#pros" class="btn">Join as a Founding Pro →</a>
+      <a href="index.html#pros" class="btn">Join free as a Founding Pro →</a>
     </div>
   </div>
 
@@ -184,14 +188,14 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 
       <div class="highlight-stat">
         <div class="hn">Up to 75% less</div>
-        <div class="hl">is what pros spend to reach you on Housio vs. Thumbtack — savings they can pass straight into <strong>lower quotes for you</strong>, instead of padding prices to cover lead fees.</div>
+        <div class="hl">is what pros spend reaching you on lead-resale sites — savings they can pass into <strong>lower quotes for you</strong>, instead of padding prices to cover lead fees they paid whether they won the job or not.</div>
       </div>
 
       <div class="bgrid">
         <div class="bcard">
           <div class="bi bi-1">💸</div>
           <h4>Lower, honest quotes</h4>
-          <p>Pros here aren't paying $40 a lead to a middleman, so they don't inflate your quote to make it back.</p>
+          <p>Pros here aren't paying $40 a lead upfront — they only pay Housio when you pay them for a completed job, so they don't inflate your quote to cover dead leads.</p>
         </div>
         <div class="bcard">
           <div class="bi bi-2">🎯</div>
@@ -222,6 +226,7 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
           <tr><td>Cost to you</td><td class="them">Free</td><td class="us">Free</td></tr>
           <tr><td>Pros contacting you</td><td class="them">8–10 (spammy)</td><td class="us">3–4 (focused)</td></tr>
           <tr><td>Pros vetted &amp; background-checked</td><td class="them">Varies</td><td class="us">Always</td></tr>
+          <tr><td>Payment protection (escrow)</td><td class="them">Limited</td><td class="us">Yes — pay in app</td></tr>
           <tr><td>Quotes padded to cover lead fees</td><td class="them">Often</td><td class="us">No</td></tr>
           <tr><td>Flooded with calls &amp; texts</td><td class="them">Yes 📵</td><td class="us">No</td></tr>
           <tr><td>Satisfaction guarantee</td><td class="them">Limited</td><td class="us">Up to $1,000</td></tr>
@@ -244,11 +249,11 @@ function switchView(v){
   document.getElementById('tabCust').classList.toggle('active', v==='cust');
 }
 
-const HOUSIO_MO = 79;
-const sLeads=document.getElementById('sLeads'), sCost=document.getElementById('sCost'), sReply=document.getElementById('sReply');
+const HOUSIO_BPS = 1000; // founding: 10% on completed jobs
+const sLeads=document.getElementById('sLeads'), sCost=document.getElementById('sCost'), sJobs=document.getElementById('sJobs'), sJobVal=document.getElementById('sJobVal');
 const fmt = n => '$' + Math.round(n).toLocaleString();
 
-let animRAF, animFrom=6252;
+let animRAF, animFrom=5148;
 function animateTo(el, target){
   cancelAnimationFrame(animRAF);
   const start=performance.now(), from=animFrom, dur=500;
@@ -262,21 +267,25 @@ function animateTo(el, target){
 }
 
 function recalc(){
-  const leads=+sLeads.value, cost=+sCost.value, reply=+sReply.value/100;
+  const leads=+sLeads.value, cost=+sCost.value, jobs=+sJobs.value, jobVal=+sJobVal.value;
   document.getElementById('vLeads').textContent=leads;
   document.getElementById('vCost').textContent='$'+cost;
-  document.getElementById('vReply').textContent=Math.round(reply*100)+'%';
+  document.getElementById('vJobs').textContent=jobs;
+  document.getElementById('vJobVal').textContent='$'+jobVal;
 
   const themMo = leads*cost;
-  const monthlySave = Math.max(themMo - HOUSIO_MO, 0);
+  const usMo = Math.round(jobs * jobVal * HOUSIO_BPS / 10000);
+  const monthlySave = Math.max(themMo - usMo, 0);
   const annual = monthlySave*12;
+  const wastedLeads = Math.max(leads - jobs, 0);
 
   document.getElementById('themMo').textContent=fmt(themMo);
-  document.getElementById('wasted$').textContent=fmt(Math.round(leads*(1-reply))*cost);
-  document.getElementById('wastedN').textContent=Math.round(leads*(1-reply))+' dead leads';
+  document.getElementById('usMo').textContent=fmt(usMo);
+  document.getElementById('wasted$').textContent=fmt(Math.round(wastedLeads * cost));
+  document.getElementById('wastedN').textContent=wastedLeads+' leads';
   animateTo(document.getElementById('annualSave'), annual);
 }
-[sLeads,sCost,sReply].forEach(s=>s.addEventListener('input',recalc));
+[sLeads,sCost,sJobs,sJobVal].forEach(s=>s.addEventListener('input',recalc));
 recalc();
 </script>
 </body>

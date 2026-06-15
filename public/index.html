@@ -342,6 +342,12 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
 .btn-sm.ghost{border-color:transparent;color:var(--gray)}
 .btn-sm.ghost:hover{color:var(--coral);border-color:transparent}
 .card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.job-earn{font-size:.78rem;color:var(--green);font-weight:600;margin-top:6px}
+.dash-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+@media(min-width:480px){.dash-stats{grid-template-columns:repeat(4,1fr)}}
+.dash-stat{background:var(--gray-light);border-radius:12px;padding:14px 10px;text-align:center}
+.dash-stat .ds-num{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.15rem;color:var(--ink)}
+.dash-stat .ds-lbl{font-size:.72rem;color:var(--gray);margin-top:3px;line-height:1.3}
 .lead-charge{font-size:.74rem;color:var(--gray);margin-top:8px;display:flex;align-items:center;gap:5px}
 /* tabs */
 .tabs{display:flex;gap:6px;background:var(--gray-light);padding:5px;border-radius:12px;margin-bottom:18px}
@@ -608,14 +614,14 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
         <div class="pros-left">
           <div class="tag">For Service Pros</div>
           <h2>Grow your business — without getting nickel-and-dimed</h2>
-          <p>We built Housio because pros deserve better than paying for dead-end leads. Here's our promise to every pro on the platform:</p>
+          <p>We built Housio because pros deserve better than paying for dead-end leads. Join free — you only pay a small fee when a homeowner actually pays you for a completed job.</p>
           <div class="pros-promises">
-            <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>You only pay when a customer replies</strong> — never for leads that ghost you.</span></div>
-            <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Caps on how many pros</strong> get each lead — no 8-way bidding wars.</span></div>
-            <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Transparent, flat lead pricing</strong> — you always know the cost before you bid.</span></div>
-            <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Refunds for bad leads</strong> — spam, wrong numbers, and fakes cost you nothing.</span></div>
+            <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Free to join</strong> — no subscription, no lead fees, ever.</span></div>
+            <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Pay only when you get paid</strong> — a small platform fee on completed jobs, nothing upfront.</span></div>
+            <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Max 4 pros per request</strong> — no 8-way bidding wars or resold leads.</span></div>
+            <div class="pros-promise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Founding pros keep 90%+</strong> — 10% on new customers, repeat work free for life.</span></div>
           </div>
-          <a href="#" class="btn-white" onclick="event.preventDefault();setSignupRole('pro');openModal('signupModal')">Become a Founding Pro — $79/mo<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="#" class="btn-white" onclick="event.preventDefault();setSignupRole('pro');openModal('signupModal')">Join free as a Founding Pro<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
           <a href="savings.html" style="display:inline-block;margin-left:18px;color:#9cc2ff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem;border-bottom:1.5px solid rgba(156,194,255,.4);padding-bottom:2px">Calculate your savings →</a>
         </div>
         <div class="compare-card">
@@ -625,10 +631,10 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
             <span class="compare-head ch-them">Others</span>
             <span class="compare-head ch-us">Housio</span>
           </div>
-          <div class="compare-row"><span class="compare-label">Charged for leads that never reply</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
-          <div class="compare-row"><span class="compare-label">Same lead sold to 8+ pros</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
-          <div class="compare-row"><span class="compare-label">Surprise price hikes</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
-          <div class="compare-row"><span class="compare-label">Refunds on junk leads</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
+          <div class="compare-row"><span class="compare-label">Monthly subscription to join</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
+          <div class="compare-row"><span class="compare-label">Pay-per-lead fees</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
+          <div class="compare-row"><span class="compare-label">Same request sold to 8+ pros</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
+          <div class="compare-row"><span class="compare-label">Only pay when you get paid</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
           <div class="compare-row"><span class="compare-label">Real human support</span><span class="compare-them">✕</span><span class="compare-us">✓</span></div>
         </div>
       </div>
@@ -656,8 +662,8 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
 <section class="stats">
   <div class="container">
     <div class="stats-grid">
-      <div class="reveal"><div class="stat-num">Free</div><div class="stat-label">To post a project &amp; compare quotes</div></div>
-      <div class="reveal rd1"><div class="stat-num">4 max</div><div class="stat-label">Pros per lead — never spammed</div></div>
+      <div class="reveal"><div class="stat-num">Free</div><div class="stat-label">For pros to join — no subscription</div></div>
+      <div class="reveal rd1"><div class="stat-num">90%+</div><div class="stat-label">What founding pros keep on every job</div></div>
       <div class="reveal rd2"><div class="stat-num">100%</div><div class="stat-label">Background-checked local pros</div></div>
       <div class="reveal rd3"><div class="stat-num">~1 hr</div><div class="stat-label">Average time to your first quote</div></div>
     </div>
@@ -780,7 +786,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
         <span class="ro-emoji">🏠</span><div class="ro-label">I'm a Homeowner</div><div class="ro-sub">Hire local pros</div>
       </div>
       <div class="role-opt" data-role="pro" onclick="setSignupRole('pro')">
-        <span class="ro-emoji">🔧</span><div class="ro-label">I'm a Pro</div><div class="ro-sub">Get more jobs</div>
+        <span class="ro-emoji">🔧</span><div class="ro-label">I'm a Pro</div><div class="ro-sub">Free · pay when you get paid</div>
       </div>
     </div>
     <div class="field"><label>Full name</label><input id="suName" placeholder="Jane Smith"></div>
@@ -883,9 +889,8 @@ rot.style.transition = 'opacity .25s ease';
 const SUPABASE_URL  = 'https://tsyibysbdhvftlayejad.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzeWlieXNiZGh2ZnRsYXllamFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0ODg1NzksImV4cCI6MjA5NzA2NDU3OX0.cGNkeU9Ta34mtUxOeC45QWq2hO8LGED29XleMsfzIAc';
 
-// Optional: a static Stripe Payment Link fallback. The primary path is the
-// `create-checkout` Edge Function, which enforces the founding $79 price
-// server-side. This link is only used if you prefer a no-function setup.
+// Optional: legacy Stripe Payment Link fallback. Pro access is free — the
+// create-checkout function returns { free: true } unless you add a paid tier later.
 const STRIPE_FOUNDING_PRO_LINK = 'YOUR_STRIPE_PAYMENT_LINK';
 
 // Stripe publishable key (safe to be public). Only used by the in-app
@@ -984,7 +989,7 @@ function renderNav() {
   if (currentProfile) {
     const name = currentProfile.full_name || currentUser?.email || 'User';
     const initials = name.split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
-    el.innerHTML = `<a class="nav-login" id="dashLink">${currentProfile.role === 'pro' ? 'My Leads' : 'My Projects'}</a>
+    el.innerHTML = `<a class="nav-login" id="dashLink">${currentProfile.role === 'pro' ? 'My Jobs' : 'My Projects'}</a>
       <div class="nav-avatar" id="navAvatar" title="${name}">${initials}</div>`;
     document.getElementById('dashLink').onclick = openDashboard;
     document.getElementById('navAvatar').onclick = openDashboard;
@@ -1175,8 +1180,8 @@ async function submitProject() {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  PRO ONBOARDING — creates the pros row + pro_trades, locks the
-//  founding $79 price, and (for demo) auto-verifies so matching works.
+//  PRO ONBOARDING — creates the pros row + pro_trades. Founding
+//  pros are free for life; revenue is a take rate on completed jobs.
 // ══════════════════════════════════════════════════════════════
 let ob = { step: 1, trades: [], founding: true };
 
@@ -1209,7 +1214,7 @@ function renderOnboard() {
 
   } else if (ob.step === 2) {
     body.innerHTML = dots + `<h3>Which services do you offer?</h3>
-      <p class="modal-sub">Pick all that apply — you'll only get matched to leads in these trades.</p>
+      <p class="modal-sub">Pick all that apply — you'll only get matched to projects in these trades.</p>
       <div class="trade-grid">${SERVICES.map(s => `<div class="trade-chip ${ob.trades.includes(s) ? 'on' : ''}" data-s="${esc(s)}">${esc(s)}</div>`).join('')}</div>
       <div class="pp-actions"><button class="pp-back" id="obBack">← Back</button><button class="btn-full" style="width:auto;padding:13px 30px" id="obNext">Continue →</button></div>`;
     body.querySelectorAll('.trade-chip').forEach(c => c.onclick = () => {
@@ -1234,7 +1239,7 @@ function renderOnboard() {
       <label class="check-row"><input type="checkbox" id="obInsured" ${ob.insured ? 'checked' : ''}><span>I carry liability insurance</span></label>
       <div style="background:linear-gradient(150deg,#0d1f2d,#13314a);border-radius:14px;padding:18px;margin:6px 0 16px">
         <label class="check-row" style="margin:0"><input type="checkbox" id="obFounding" ${ob.founding ? 'checked' : ''} style="accent-color:#5fd99a">
-          <span style="color:#fff;font-weight:600">🔒 Lock in the <strong>Founding Pro rate — $79/mo for life</strong> (regular price $149/mo).</span></label>
+          <span style="color:#fff;font-weight:600">🔒 Join as a <strong>Founding Pro — free for life</strong>. Only pay a small fee when a homeowner pays you for a completed job (10% on new customers, repeat work free).</span></label>
       </div>
       <div class="pp-actions"><button class="pp-back" id="obBack">← Back</button><button class="btn-full" style="width:auto;padding:13px 30px" id="obSubmit">Finish setup →</button></div>`;
     document.getElementById('obBack').onclick = () => { ob.step = 2; renderOnboard(); };
@@ -1255,9 +1260,9 @@ async function submitOnboarding() {
 
   await geocodeZip(ob.zip); // so the pro is locatable by pros_near()
 
-  // Upsert the pros row. founding_pro=true → the DB trigger locks $79.
+  // Upsert the pros row. founding_pro=true → free for life (DB trigger).
   // verified/verification are auto-set here for the demo so matching
-  // produces leads; in production this is gated by real verification.
+  // produces job requests; in production this is gated by real verification.
   const { data: pro, error } = await sb.from('pros').upsert({
     profile_id: currentUser.id,
     business_name: ob.business_name,
@@ -1290,7 +1295,7 @@ async function submitOnboarding() {
   }
 
   closeModal('onboardModal');
-  toast(ob.founding ? 'Founding Pro rate locked in — $79/mo for life! 🔒' : 'Your pro profile is live!');
+  toast(ob.founding ? 'Welcome, Founding Pro — you\'re in free for life! 🔒' : 'Your pro profile is live!');
   setTimeout(openDashboard, 600);
 }
 
@@ -1347,94 +1352,152 @@ async function renderHomeownerDash(name) {
   document.getElementById('dashNew').onclick = () => { closeAll(); openPostProject(); };
 }
 
-// ── Pro dashboard (onboarding gate → leads inbox) ─────────────
+// ── Pro dashboard (onboarding gate → jobs & earnings) ───────────
 async function renderProDash(name) {
   const body = document.getElementById('dashBody');
   const { data: pro } = await sb.from('pros').select('*').eq('profile_id', currentUser.id).maybeSingle();
 
   if (!pro) {
     body.innerHTML = `<h3>Welcome, ${esc(name)} 👋</h3>
-      <p class="modal-sub">Let's set up your pro profile so we can match you with local leads. Takes about 2 minutes.</p>
+      <p class="modal-sub">Set up your pro profile so we can match you with local homeowners. Takes about 2 minutes.</p>
       <div style="background:linear-gradient(150deg,#0d1f2d,#13314a);border-radius:16px;padding:22px;margin-bottom:18px">
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.06rem;color:#fff;margin-bottom:5px">Become a Founding Pro 🔒</div>
-        <p style="color:#aebfce;font-size:.9rem;margin-bottom:15px;line-height:1.5">$79/mo locked in for life. Exclusive Central Oregon leads — you only pay when a customer replies.</p>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.06rem;color:#fff;margin-bottom:5px">Join free as a Founding Pro 🔒</div>
+        <p style="color:#aebfce;font-size:.9rem;margin-bottom:15px;line-height:1.5">No subscription. No lead fees. You only pay a small platform fee when a homeowner pays you for a completed job — founding pros keep 90%+.</p>
         <button class="btn-full" style="background:#fff;color:var(--ink)" id="obStart">Set up my pro profile →</button>
       </div>`;
     document.getElementById('obStart').onclick = openOnboarding;
     return;
   }
 
-  const { data: subRows } = await sb.from('subscriptions').select('status, plan, is_founding, locked_price_cents').eq('pro_id', pro.id).order('updated_at', { ascending: false }).limit(1);
-  const sub = subRows?.[0];
-  const { data: leads } = await sb.from('leads')
-    .select('id, status, price, charged, created_at, project_id, projects(id, details, zip, status, trade_id, trades(name, base_lead_price), homeowner:profiles(full_name))')
-    .eq('pro_id', pro.id).order('created_at', { ascending: false }).limit(40);
+  const [{ data: leads }, { data: payments }] = await Promise.all([
+    sb.from('leads')
+      .select('id, status, created_at, project_id, projects(id, details, zip, status, trade_id, trades(name), homeowner:profiles(full_name))')
+      .eq('pro_id', pro.id).order('created_at', { ascending: false }).limit(40),
+    sb.from('payments')
+      .select('id, amount_cents, platform_fee_cents, status, project_id, completed_at, released_at, created_at, projects(trades(name), details, zip)')
+      .eq('pro_id', pro.id).order('created_at', { ascending: false }).limit(50)
+  ]);
 
-  const active = sub && ['active', 'trialing'].includes(sub.status);
-  const priceLabel = pro.founding_pro ? '$79/mo · Founding (locked for life)' : `${money(pro.locked_price_cents)}/mo`;
-  const subBanner = active
-    ? `<div class="pill pill-green" style="margin-bottom:14px">✓ Subscription active · ${esc(priceLabel)}</div>`
-    : `<div style="background:linear-gradient(150deg,#0d1f2d,#13314a);border-radius:14px;padding:18px;margin-bottom:16px">
-         <div style="color:#fff;font-weight:700;margin-bottom:4px">Activate your plan — ${esc(priceLabel)}</div>
-         <p style="color:#aebfce;font-size:.85rem;margin-bottom:12px">You're matched to leads below. Start your subscription to unlock replies.</p>
-         <button class="btn-sm primary" id="subBtn">Start subscription</button>
-         <button class="btn-sm" id="payoutBtn" style="margin-left:8px">Set up payouts</button>
-       </div>`;
+  const succeeded = (payments || []).filter(p => p.status === 'succeeded');
+  const pendingPay = (payments || []).filter(p =>
+    ['requires_payment', 'processing'].includes(p.status) ||
+    (p.completed_at && !p.released_at && p.status !== 'succeeded'));
+  const totalEarned = succeeded.reduce((s, p) => s + (p.amount_cents - p.platform_fee_cents), 0);
+  const pendingPayout = pendingPay.reduce((s, p) => s + (p.amount_cents - p.platform_fee_cents), 0);
+  const activeLeads = (leads || []).filter(l => !['lost', 'refunded', 'won'].includes(l.status));
+  const jobsDone = pro.jobs_count || succeeded.length;
+
+  const feeCopy = pro.founding_pro
+    ? 'Founding Pro · 10% on new customers · repeat jobs free'
+    : '15% on new customers · 5% on repeat work';
+
+  const payoutBanner = !pro.stripe_account_id
+    ? `<div style="background:linear-gradient(150deg,#0d1f2d,#13314a);border-radius:14px;padding:18px;margin-bottom:16px">
+         <div style="color:#fff;font-weight:700;margin-bottom:4px">Set up payouts to get paid</div>
+         <p style="color:#aebfce;font-size:.85rem;margin-bottom:12px">Connect your bank via Stripe. Housio only takes a fee when a homeowner pays you for a completed job.</p>
+         <button class="btn-sm primary" id="payoutBtn">Set up payouts →</button>
+       </div>`
+    : `<div class="pill ${pro.founding_pro ? 'pill-green' : 'pill-blue'}" style="margin-bottom:14px">${pro.founding_pro ? '🔒 ' : ''}${esc(feeCopy)}</div>`;
 
   body.innerHTML = `<h3>Hi, ${esc(name)} 👋</h3>
     <p class="modal-sub">${esc(pro.business_name || 'Your business')} · ${pill(pro.verified ? 'verified' : 'pending')}</p>
-    ${subBanner}
-    <p style="font-size:.82rem;color:var(--gray);margin-bottom:10px">You only pay the lead fee when a customer replies. Bad lead? Report it for a refund.</p>
-    <div id="leadsList"></div>`;
+    ${payoutBanner}
+    <div class="dash-stats">
+      <div class="dash-stat"><div class="ds-num">${jobsDone}</div><div class="ds-lbl">Jobs completed</div></div>
+      <div class="dash-stat"><div class="ds-num">${money(totalEarned)}</div><div class="ds-lbl">Total earned</div></div>
+      <div class="dash-stat"><div class="ds-num">${money(pendingPayout)}</div><div class="ds-lbl">Pending payout</div></div>
+      <div class="dash-stat"><div class="ds-num">${activeLeads.length}</div><div class="ds-lbl">Active requests</div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="tabActive">Active (${activeLeads.length})</button>
+      <button class="tab" id="tabDone">Completed (${succeeded.length})</button>
+    </div>
+    <div id="jobsPanel"></div>`;
 
-  document.getElementById('subBtn')?.addEventListener('click', startProCheckout);
   document.getElementById('payoutBtn')?.addEventListener('click', startConnectOnboarding);
-  renderLeads(leads || [], pro);
+
+  const ctx = { pro, payments: payments || [] };
+  const showActive = () => {
+    document.getElementById('tabActive').classList.add('active');
+    document.getElementById('tabDone').classList.remove('active');
+    renderJobRequests(activeLeads, ctx);
+  };
+  const showDone = () => {
+    document.getElementById('tabDone').classList.add('active');
+    document.getElementById('tabActive').classList.remove('active');
+    renderCompletedJobs(succeeded, ctx);
+  };
+  document.getElementById('tabActive').onclick = showActive;
+  document.getElementById('tabDone').onclick = showDone;
+  showActive();
 }
 
-// ── Leads inbox cards ─────────────────────────────────────────
-function renderLeads(leads, pro) {
-  const wrap = document.getElementById('leadsList');
+// ── Active job requests (matched projects) ────────────────────
+function renderJobRequests(leads, ctx) {
+  const wrap = document.getElementById('jobsPanel');
   if (!wrap) return;
+  const { pro, payments } = ctx;
   if (!leads.length) {
-    wrap.innerHTML = '<div class="dash-empty">No leads yet — they\'ll appear here the moment a homeowner posts a matching project in your area.</div>';
+    wrap.innerHTML = '<div class="dash-empty">No active requests yet — they\'ll appear here when a homeowner posts a matching project in your area.</div>';
     return;
   }
   wrap.innerHTML = leads.map(l => {
     const t = l.projects?.trades;
-    const fee = t?.base_lead_price != null ? `$${Number(t.base_lead_price).toFixed(0)}` : '—';
     const who = l.projects?.homeowner?.full_name?.split(' ')[0] || 'Homeowner';
-    const charged = l.charged
-      ? `<span class="lead-charge">💳 Charged ${l.price != null ? '$' + Number(l.price).toFixed(0) : fee} (customer replied)</span>`
-      : `<span class="lead-charge">🎟️ Lead fee ${fee} — charged only if ${esc(who)} replies</span>`;
+    const pay = payments.find(p => p.project_id === l.project_id && !['canceled', 'failed', 'refunded'].includes(p.status));
+    const canComplete = pay && ['processing', 'requires_payment'].includes(pay.status) && !pay.completed_at;
+    const awaitingConfirm = pay?.completed_at && !pay?.released_at;
     const closed = ['lost', 'refunded', 'won'].includes(l.status);
     return `<div class="project-item">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
         <h4>${esc(t?.name || 'Service Request')}</h4>${pill(l.status)}
       </div>
-      <div class="pi-meta">${esc(l.projects?.details || 'No details')} · ZIP ${esc(l.projects?.zip || '—')} · ${who} · ${new Date(l.created_at).toLocaleDateString()}</div>
-      ${charged}
+      <div class="pi-meta">${esc(l.projects?.details || 'No details')} · ZIP ${esc(l.projects?.zip || '—')} · ${esc(who)} · ${new Date(l.created_at).toLocaleDateString()}</div>
+      ${pay ? `<span class="lead-charge">💳 ${money(pay.amount_cents)} booked · you keep ${money(pay.amount_cents - pay.platform_fee_cents)}</span>` : '<span class="lead-charge">🎟️ Free to respond — no lead fees</span>'}
+      ${awaitingConfirm ? '<span class="lead-charge">⏳ Waiting for homeowner to confirm completion</span>' : ''}
       <div class="card-actions">
-        ${closed ? '' : `<button class="btn-sm primary" data-act="respond" data-lead="${l.id}" data-pid="${l.project_id}">💬 Respond</button>`}
+        ${closed ? '' : `<button class="btn-sm primary" data-act="respond" data-lead="${l.id}" data-pid="${l.project_id}">💬 Message</button>`}
         ${closed ? '' : `<button class="btn-sm" data-act="quote" data-lead="${l.id}" data-pid="${l.project_id}" data-tid="${l.projects?.trade_id || ''}">📝 Send quote</button>`}
+        ${canComplete ? `<button class="btn-sm primary" data-act="complete" data-pay="${pay.id}">✓ Mark job complete</button>` : ''}
         ${closed ? '' : `<button class="btn-sm ghost" data-act="decline" data-lead="${l.id}">Decline</button>`}
-        ${l.charged && l.status !== 'refunded' ? `<button class="btn-sm ghost" data-act="report" data-lead="${l.id}">Report bad lead</button>` : ''}
       </div>
     </div>`;
   }).join('');
 
   wrap.querySelectorAll('[data-act]').forEach(b => b.onclick = async () => {
-    const { act, lead, pid, tid } = b.dataset;
+    const { act, lead, pid, tid, pay } = b.dataset;
     if (act === 'respond') openConvo({ leadId: lead, projectId: pid, title: 'Conversation with homeowner', proId: pro.id });
     else if (act === 'quote') openQuote({ leadId: lead, projectId: pid, proId: pro.id, tradeId: tid });
-    else if (act === 'decline') { await sb.rpc('pro_update_lead', { _lead: lead, _status: 'lost', _reason: null }); toast('Lead declined'); openDashboard(); }
-    else if (act === 'report') {
-      const reason = prompt('What was wrong with this lead? (spam, wrong number, fake, etc.)');
-      if (reason === null) return;
-      await sb.rpc('pro_update_lead', { _lead: lead, _status: 'refunded', _reason: reason || 'bad lead' });
-      toast('Reported — the lead fee will be refunded.'); openDashboard();
+    else if (act === 'decline') { await sb.rpc('pro_update_lead', { _lead: lead, _status: 'lost', _reason: null }); toast('Request declined'); openDashboard(); }
+    else if (act === 'complete') {
+      b.textContent = 'Saving…'; b.disabled = true;
+      const res = await callFn('stripe-connect', { action: 'complete', payment_id: pay });
+      if (res?.error) { toast(res.error); b.textContent = '✓ Mark job complete'; b.disabled = false; return; }
+      toast('Job marked complete — payout releases when the homeowner confirms (or after 3 days).');
+      openDashboard();
     }
   });
+}
+
+// ── Completed jobs & earnings ─────────────────────────────────
+function renderCompletedJobs(succeeded, ctx) {
+  const wrap = document.getElementById('jobsPanel');
+  if (!wrap) return;
+  if (!succeeded.length) {
+    wrap.innerHTML = '<div class="dash-empty">No completed paid jobs yet. When a homeowner pays you through Housio and the job is done, it\'ll show up here with your earnings.</div>';
+    return;
+  }
+  wrap.innerHTML = succeeded.map(p => {
+    const earned = p.amount_cents - p.platform_fee_cents;
+    const trade = p.projects?.trades?.name || 'Completed job';
+    return `<div class="project-item">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+        <h4>${esc(trade)}</h4>${pill('completed')}
+      </div>
+      <div class="pi-meta">${esc(p.projects?.details || 'Job')} · ZIP ${esc(p.projects?.zip || '—')} · ${new Date(p.created_at).toLocaleDateString()}</div>
+      <div class="job-earn">You earned ${money(earned)} · Housio fee ${money(p.platform_fee_cents)}</div>
+    </div>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1447,7 +1510,7 @@ async function openConvo(opts) {
   convo.leadId = opts.leadId;
   document.getElementById('convoHead').innerHTML =
     `<h3 style="margin-bottom:2px">${esc(opts.title || 'Messages')}</h3>
-     <p class="modal-sub" style="margin-bottom:16px">Replies are billed to the pro only — messaging is always free for you.</p>`;
+     <p class="modal-sub" style="margin-bottom:16px">Messaging is free. Contact details stay hidden until a quote is accepted and payment is held through Housio.</p>`;
   openModal('convoModal');
   await loadConvo();
 
