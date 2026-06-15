@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Profile — Housio</title>
+<meta name="description" content="View a verified local pro's profile, services, ratings, and reviews on Housio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.6;color:#1a2b3c;background:#f4f7fa}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;color:#0d1f2d;line-height:1.15}
+a{text-decoration:none;color:inherit}
+:root{--ink:#0d1f2d;--blue:#1763f7;--blue-dark:#0d4ed0;--blue-light:#eaf1ff;--blue-mid:#cfe0ff;--green:#12b76a;--amber:#f59e0b;--gray:#5a6b7b;--gray-light:#f4f7fa;--gray-mid:#e3e9f0;--shadow:0 8px 30px rgba(13,31,45,.10);--shadow-sm:0 2px 12px rgba(13,31,45,.07)}
+nav{background:#fff;border-bottom:1px solid var(--gray-mid)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:920px;margin:0 auto;padding:15px 24px}
+.logo{display:flex;align-items:center;gap:9px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.3rem;color:var(--ink)}
+.logo-mark{width:32px;height:32px;background:var(--blue);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:19px;height:19px}
+.nav-cta{background:var(--blue);color:#fff!important;padding:10px 20px;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.88rem}
+.nav-cta:hover{background:var(--blue-dark)}
+.wrap{max-width:920px;margin:28px auto;padding:0 24px}
+.back{color:var(--gray);font-weight:600;font-size:.88rem;margin-bottom:14px;display:inline-block}
+.back:hover{color:var(--blue)}
+.card{background:#fff;border:1px solid var(--gray-mid);border-radius:20px;padding:30px;box-shadow:var(--shadow-sm);margin-bottom:20px}
+.head{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+.avatar{width:84px;height:84px;border-radius:20px;background:linear-gradient(135deg,#1763f7,#36a0ff);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:2rem;flex-shrink:0}
+.head-main{flex:1;min-width:220px}
+.head-main h1{font-size:1.7rem;letter-spacing:-.5px;margin-bottom:6px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:.74rem;font-weight:700;padding:5px 12px;border-radius:100px}
+.b-green{background:#e6faf2;color:var(--green)}
+.b-blue{background:var(--blue-light);color:var(--blue)}
+.b-dark{background:var(--ink);color:#fff}
+.rating-big{display:flex;align-items:center;gap:10px;margin-top:6px}
+.rating-big .stars{color:var(--amber);font-size:1.1rem;letter-spacing:2px}
+.rating-big .num{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.2rem;color:var(--ink)}
+.rating-big .cnt{color:var(--gray);font-size:.88rem}
+.bio{margin-top:18px;color:var(--ink);line-height:1.65}
+.section-title{font-size:1.05rem;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-mid);font-weight:600;font-size:.84rem;padding:7px 14px;border-radius:100px}
+.meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+.meta-box{background:var(--gray-light);border-radius:13px;padding:14px}
+.meta-box .l{font-size:.74rem;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.meta-box .v{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--ink);margin-top:3px}
+.review{border-bottom:1px solid var(--gray-mid);padding:16px 0}
+.review:last-child{border-bottom:none}
+.review .stars{color:var(--amber);letter-spacing:1px;font-size:.86rem}
+.review .who{font-size:.8rem;color:var(--gray);margin:2px 0 6px}
+.review .body{color:var(--ink2,#1a2b3c);font-size:.94rem;line-height:1.55}
+.empty{color:var(--gray);font-size:.92rem;text-align:center;padding:18px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:13px 26px;border-radius:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem}
+.btn:hover{background:var(--blue-dark)}
+@media(max-width:560px){.meta-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 3 9v12h6v-7h6v7h6V9z" fill="white"/></svg></span>
+      Housio
+    </a>
+    <a href="index.html" class="nav-cta">Find a Pro</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <a href="index.html" class="back">← Back to Housio</a>
+  <div id="proRoot"><div class="card"><p class="empty">Loading pro profile…</p></div></div>
+</div>
+
+<script>
+// Keep these in sync with index.html (same anon key is safe client-side).
+const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+const CONFIGURED = !SUPABASE_URL.startsWith('YOUR_') && !SUPABASE_ANON.startsWith('YOUR_');
+const sb = CONFIGURED ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+
+const esc = s => (s ?? '').toString().replace(/[&<>"]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]));
+const starStr = r => { const n = Math.round(Number(r) || 0); return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); };
+const id = new URLSearchParams(location.search).get('id');
+
+async function load() {
+  const root = document.getElementById('proRoot');
+  if (!CONFIGURED) {
+    root.innerHTML = sampleCard();
+    return;
+  }
+  if (!id) { root.innerHTML = '<div class="card"><p class="empty">No pro selected.</p></div>'; return; }
+
+  const { data: pro, error } = await sb.from('pros')
+    .select('id, business_name, bio, rating, reviews_count, jobs_count, verified, founding_pro, website, zip, radius_miles, years_experience, insured, pro_trades(trades(name))')
+    .eq('id', id).maybeSingle();
+
+  if (error || !pro) { root.innerHTML = '<div class="card"><p class="empty">Pro not found.</p></div>'; return; }
+
+  const { data: reviews } = await sb.from('reviews')
+    .select('rating, body, created_at').eq('pro_id', id).order('created_at', { ascending: false }).limit(50);
+
+  render(pro, reviews || []);
+}
+
+function render(pro, reviews) {
+  const name = pro.business_name || 'Housio Pro';
+  const initials = name.split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+  const trades = (pro.pro_trades || []).map(pt => pt.trades?.name).filter(Boolean);
+
+  document.getElementById('proRoot').innerHTML = `
+    <div class="card">
+      <div class="head">
+        <div class="avatar">${esc(initials)}</div>
+        <div class="head-main">
+          <h1>${esc(name)}</h1>
+          <div class="badges">
+            ${pro.verified ? '<span class="badge b-green">✓ Background-checked</span>' : ''}
+            ${pro.founding_pro ? '<span class="badge b-dark">🔒 Founding Pro</span>' : ''}
+            ${pro.insured ? '<span class="badge b-blue">🛡️ Insured</span>' : ''}
+          </div>
+          <div class="rating-big">
+            <span class="stars">${starStr(pro.rating)}</span>
+            <span class="num">${Number(pro.rating || 0).toFixed(1)}</span>
+            <span class="cnt">· ${pro.reviews_count || 0} reviews · ${pro.jobs_count || 0} jobs done</span>
+          </div>
+        </div>
+      </div>
+      ${pro.bio ? `<p class="bio">${esc(pro.bio)}</p>` : ''}
+      <div class="cta-row">
+        <a class="btn" href="index.html">Request a quote</a>
+        ${pro.website ? `<a class="btn" style="background:#fff;color:var(--blue);border:1.5px solid var(--blue-mid)" href="${esc(pro.website.startsWith('http') ? pro.website : 'https://' + pro.website)}" target="_blank">Visit website ↗</a>` : ''}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">Services offered</h3>
+      <div class="chips">${trades.length ? trades.map(t => `<span class="chip">${esc(t)}</span>`).join('') : '<span class="empty">No services listed yet.</span>'}</div>
+      <div class="meta-grid">
+        <div class="meta-box"><div class="l">Service area</div><div class="v">ZIP ${esc(pro.zip || '—')} · ${pro.radius_miles || 25} mi</div></div>
+        <div class="meta-box"><div class="l">Experience</div><div class="v">${pro.years_experience ? pro.years_experience + ' yrs' : '—'}</div></div>
+        <div class="meta-box"><div class="l">Reviews</div><div class="v">${pro.reviews_count || 0}</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="section-title">Reviews (${reviews.length})</h3>
+      ${reviews.length
+        ? reviews.map(r => `<div class="review">
+            <div class="stars">${starStr(r.rating)}</div>
+            <div class="who">Verified homeowner · ${new Date(r.created_at).toLocaleDateString()}</div>
+            ${r.body ? `<div class="body">${esc(r.body)}</div>` : ''}
+          </div>`).join('')
+        : '<p class="empty">No reviews yet — be the first to hire and review this pro.</p>'}
+    </div>`;
+}
+
+function sampleCard() {
+  return `<div class="card">
+    <div class="head">
+      <div class="avatar">HD</div>
+      <div class="head-main">
+        <h1>High Desert Home Services</h1>
+        <div class="badges"><span class="badge b-green">✓ Background-checked</span><span class="badge b-dark">🔒 Founding Pro</span><span class="badge b-blue">🛡️ Insured</span></div>
+        <div class="rating-big"><span class="stars">★★★★★</span><span class="num">4.9</span><span class="cnt">· 38 reviews · 120 jobs done</span></div>
+      </div>
+    </div>
+    <p class="bio">This is a sample profile shown in demo mode. Add your Supabase keys in <strong>pro.html</strong> to load real pro profiles by id (e.g. <code>pro.html?id=…</code>).</p>
+    <div class="cta-row"><a class="btn" href="index.html">Request a quote</a></div>
+  </div>`;
+}
+
+load();
+</script>
+</body>
+</html>

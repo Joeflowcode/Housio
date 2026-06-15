@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Housio — See How Much You Save</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1f2d;--ink2:#1a2b3c;--blue:#1763f7;--blue-dark:#0d4ed0;--blue-light:#eaf1ff;--blue-mid:#cfe0ff;
+  --green:#12b76a;--green-light:#e6faf2;--amber:#f59e0b;--coral:#ff6a4d;--coral-light:#fff0ed;
+  --gray:#5a6b7b;--gray-light:#f4f7fa;--gray-mid:#e3e9f0;
+}
+body{font-family:'Inter',sans-serif;color:var(--ink2);line-height:1.6;background:linear-gradient(180deg,#f3f8ff,#fff 420px);min-height:100vh;padding:0 0 60px}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);line-height:1.15;font-weight:800}
+.wrap{max-width:920px;margin:0 auto;padding:0 24px}
+/* header */
+.top{text-align:center;padding:54px 24px 34px}
+.logo{display:inline-flex;align-items:center;gap:9px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.35rem;color:var(--ink);margin-bottom:26px}
+.logo-mark{width:34px;height:34px;background:var(--blue);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.top h1{font-size:clamp(2.1rem,5vw,3.1rem);letter-spacing:-1.5px;margin-bottom:12px}
+.top h1 span{color:var(--blue)}
+.top p{font-size:1.1rem;color:var(--gray);max-width:520px;margin:0 auto}
+/* toggle */
+.toggle{display:inline-flex;background:#fff;border:1.5px solid var(--gray-mid);border-radius:100px;padding:5px;margin:30px auto 0;box-shadow:0 4px 18px rgba(13,31,45,.06)}
+.toggle button{border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.95rem;color:var(--gray);padding:11px 26px;border-radius:100px;cursor:pointer;transition:all .25s}
+.toggle button.active{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(23,99,247,.3)}
+/* card */
+.view{display:none}
+.view.active{display:block;animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card{background:#fff;border:1.5px solid var(--gray-mid);border-radius:22px;box-shadow:0 12px 50px rgba(13,31,45,.09);padding:38px;margin-bottom:24px}
+.card-tag{display:inline-block;background:var(--blue-light);color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;padding:5px 13px;border-radius:100px;margin-bottom:14px}
+.card h2{font-size:1.7rem;letter-spacing:-.5px;margin-bottom:6px}
+.card .csub{color:var(--gray);margin-bottom:28px}
+/* calculator */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center}
+.sliders{display:flex;flex-direction:column;gap:26px}
+.slider-row label{display:flex;justify-content:space-between;align-items:baseline;font-size:.9rem;font-weight:600;color:var(--ink2);margin-bottom:10px}
+.slider-row label .v{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.15rem;color:var(--blue)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:10px;background:var(--gray-mid);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--blue);cursor:pointer;border:3px solid #fff;box-shadow:0 2px 8px rgba(23,99,247,.4)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--blue);cursor:pointer;border:3px solid #fff;box-shadow:0 2px 8px rgba(23,99,247,.4)}
+.result{background:linear-gradient(155deg,#0d1f2d,#13314a);border-radius:18px;padding:32px 28px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.result::before{content:'';position:absolute;top:-60px;right:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(18,183,106,.3),transparent 70%)}
+.result .rl{font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:#9cc2ff;font-weight:600;position:relative}
+.result .big{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:3.4rem;letter-spacing:-2px;line-height:1.05;margin:6px 0 2px;background:linear-gradient(120deg,#5fd99a,#7fe6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative}
+.result .per{color:#aebfce;font-size:.92rem;margin-bottom:22px;position:relative}
+.rbreak{display:flex;justify-content:space-between;gap:10px;position:relative}
+.rbreak .b{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:13px 8px}
+.rbreak .b .bn{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.15rem}
+.rbreak .b.them .bn{color:#ff8b7a}
+.rbreak .b.us .bn{color:#5fd99a}
+.rbreak .b .bl{font-size:.68rem;color:#aebfce;margin-top:2px}
+.assump{font-size:.78rem;color:var(--gray);text-align:center;margin-top:20px;line-height:1.5}
+/* wasted leads bar */
+.wasted{background:var(--coral-light);border:1px solid #ffd4cb;border-radius:14px;padding:18px 22px;margin-top:24px;display:flex;align-items:center;gap:16px}
+.wasted .we{font-size:1.8rem}
+.wasted .wt{font-size:.92rem;color:var(--ink2)}
+.wasted .wt strong{color:var(--coral)}
+/* comparison table */
+.cmp{width:100%;border-collapse:collapse;margin-top:6px;font-size:.93rem}
+.cmp th,.cmp td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--gray-mid)}
+.cmp thead th{font-family:'Plus Jakarta Sans',sans-serif;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;color:var(--gray)}
+.cmp thead th.us{color:var(--blue)}
+.cmp tbody td:first-child{color:var(--ink2);font-weight:500}
+.cmp .them{color:var(--coral);font-weight:600;text-align:center;width:130px}
+.cmp .us{color:var(--green);font-weight:700;text-align:center;width:160px;background:var(--green-light)}
+.cmp tr:last-child td{border-bottom:none}
+.cmp thead th.us-h{background:var(--green-light);border-top-left-radius:10px;border-top-right-radius:10px}
+/* customer benefits */
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px}
+.bcard{border:1.5px solid var(--gray-mid);border-radius:14px;padding:22px}
+.bcard .bi{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:12px}
+.bi-1{background:var(--blue-light)}.bi-2{background:var(--green-light)}.bi-3{background:#fff1ea}.bi-4{background:#fef6e6}
+.bcard h4{font-size:1.02rem;margin-bottom:5px}
+.bcard p{font-size:.88rem;color:var(--gray);line-height:1.55}
+.highlight-stat{background:linear-gradient(155deg,#eaf1ff,#f3f8ff);border:1.5px solid var(--blue-mid);border-radius:16px;padding:26px;text-align:center;margin-bottom:24px}
+.highlight-stat .hn{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:2.6rem;color:var(--blue);letter-spacing:-1px}
+.highlight-stat .hl{color:var(--ink2);font-weight:500;max-width:440px;margin:4px auto 0}
+/* cta */
+.cta{text-align:center;padding:8px 0 0}
+.btn{display:inline-flex;align-items:center;gap:9px;background:var(--blue);color:#fff;padding:15px 32px;border-radius:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;text-decoration:none;transition:all .2s}
+.btn:hover{background:var(--blue-dark);transform:translateY(-2px);box-shadow:0 12px 32px rgba(23,99,247,.3)}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--gray-mid);margin-left:10px}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue);background:#fff}
+@media(max-width:720px){
+  .calc-grid{grid-template-columns:1fr;gap:26px}
+  .bgrid{grid-template-columns:1fr}
+  .card{padding:26px}
+  .cmp th,.cmp td{padding:11px 10px;font-size:.86rem}
+  .cmp .them{width:70px}.cmp .us{width:90px}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo"><span class="logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2 3 9v12h6v-7h6v7h6V9z" fill="white"/></svg></span>Housio</div>
+  <h1>See exactly how much<br>you <span>save with Housio</span></h1>
+  <p>Less money wasted on bad leads. Lower prices for homeowners. Here's the math.</p>
+  <div class="toggle">
+    <button id="tabPro" class="active" onclick="switchView('pro')">💼 I'm a Pro</button>
+    <button id="tabCust" onclick="switchView('cust')">🏠 I'm a Homeowner</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ════ PRO VIEW ════ -->
+  <div class="view active" id="proView">
+    <div class="card">
+      <div class="card-tag">Savings Calculator</div>
+      <h2>What are you wasting on Thumbtack &amp; Angi?</h2>
+      <p class="csub">Drag the sliders to match your real numbers and watch your savings update.</p>
+
+      <div class="calc-grid">
+        <div class="sliders">
+          <div class="slider-row">
+            <label>Leads you buy per month <span class="v" id="vLeads">20</span></label>
+            <input type="range" id="sLeads" min="5" max="60" value="20">
+          </div>
+          <div class="slider-row">
+            <label>Avg. cost per lead (the other guys) <span class="v" id="vCost">$30</span></label>
+            <input type="range" id="sCost" min="15" max="80" value="30">
+          </div>
+          <div class="slider-row">
+            <label>How often those leads actually reply <span class="v" id="vReply">35%</span></label>
+            <input type="range" id="sReply" min="20" max="70" value="35">
+          </div>
+        </div>
+
+        <div class="result">
+          <div class="rl">You'd save with Housio</div>
+          <div class="big" id="annualSave">$6,252</div>
+          <div class="per">per year</div>
+          <div class="rbreak">
+            <div class="b them"><div class="bn" id="themMo">$600</div><div class="bl">Thumbtack / mo</div></div>
+            <div class="b us"><div class="bn">$79</div><div class="bl">Housio / mo</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wasted">
+        <span class="we">🔥</span>
+        <div class="wt">On the other platforms you're paying for about <strong id="wastedN">13 dead leads</strong> a month that never even reply — roughly <strong id="wasted$">$390</strong> down the drain. On Housio, <strong>you only pay when a customer actually replies.</strong></div>
+      </div>
+
+      <p class="assump">Based on the numbers you enter. Housio shown at the <strong>founding-pro rate of $79/mo</strong> — locked in for life (regular rate $149). Your real savings are usually higher once you count the time you stop wasting on dead leads.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Side by Side</div>
+      <h2>Why pros switch to Housio</h2>
+      <table class="cmp">
+        <thead>
+          <tr><th>What you get</th><th class="them" style="text-align:center">Thumbtack / Angi</th><th class="us-h us" style="text-align:center">Housio</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Pay for leads that never reply</td><td class="them">Yes 😣</td><td class="us">Never</td></tr>
+          <tr><td>Same lead sold to…</td><td class="them">8+ pros</td><td class="us">3–4 max</td></tr>
+          <tr><td>Lead pricing</td><td class="them">Variable, rises</td><td class="us">Flat &amp; transparent</td></tr>
+          <tr><td>Refunds on junk/spam leads</td><td class="them">Rare, a fight</td><td class="us">Always</td></tr>
+          <tr><td>Cost at 20 leads/mo</td><td class="them">~$600</td><td class="us">$79 flat</td></tr>
+          <tr><td>Long-term contract</td><td class="them">Sometimes</td><td class="us">None</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cta">
+      <a href="index.html#pros" class="btn">Join as a Founding Pro →</a>
+    </div>
+  </div>
+
+  <!-- ════ CUSTOMER VIEW ════ -->
+  <div class="view" id="custView">
+    <div class="card">
+      <div class="card-tag">Better for Homeowners</div>
+      <h2>Why you get better prices here</h2>
+      <p class="csub">Housio is free to use — just like the other sites. The difference is what happens behind the scenes.</p>
+
+      <div class="highlight-stat">
+        <div class="hn">Up to 75% less</div>
+        <div class="hl">is what pros spend to reach you on Housio vs. Thumbtack — savings they can pass straight into <strong>lower quotes for you</strong>, instead of padding prices to cover lead fees.</div>
+      </div>
+
+      <div class="bgrid">
+        <div class="bcard">
+          <div class="bi bi-1">💸</div>
+          <h4>Lower, honest quotes</h4>
+          <p>Pros here aren't paying $40 a lead to a middleman, so they don't inflate your quote to make it back.</p>
+        </div>
+        <div class="bcard">
+          <div class="bi bi-2">🎯</div>
+          <h4>Real attention, not spam</h4>
+          <p>Your request goes to 3–4 matched pros — not blasted to 10 who all cold-call you at dinner.</p>
+        </div>
+        <div class="bcard">
+          <div class="bi bi-3">🛡️</div>
+          <h4>Every pro is vetted</h4>
+          <p>Identity-verified and background-checked before they can quote a single job. No mystery contractors.</p>
+        </div>
+        <div class="bcard">
+          <div class="bi bi-4">⭐</div>
+          <h4>Reviews you can trust</h4>
+          <p>Only from real, completed jobs — never bought, never gamed, never pay-to-rank.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Side by Side</div>
+      <h2>Housio vs. the lead-resale sites</h2>
+      <table class="cmp">
+        <thead>
+          <tr><th>Your experience</th><th class="them" style="text-align:center">Thumbtack / Angi</th><th class="us-h us" style="text-align:center">Housio</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cost to you</td><td class="them">Free</td><td class="us">Free</td></tr>
+          <tr><td>Pros contacting you</td><td class="them">8–10 (spammy)</td><td class="us">3–4 (focused)</td></tr>
+          <tr><td>Pros vetted &amp; background-checked</td><td class="them">Varies</td><td class="us">Always</td></tr>
+          <tr><td>Quotes padded to cover lead fees</td><td class="them">Often</td><td class="us">No</td></tr>
+          <tr><td>Flooded with calls &amp; texts</td><td class="them">Yes 📵</td><td class="us">No</td></tr>
+          <tr><td>Satisfaction guarantee</td><td class="them">Limited</td><td class="us">Up to $1,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cta">
+      <a href="index.html" class="btn">Find a Trusted Pro →</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchView(v){
+  document.getElementById('proView').classList.toggle('active', v==='pro');
+  document.getElementById('custView').classList.toggle('active', v==='cust');
+  document.getElementById('tabPro').classList.toggle('active', v==='pro');
+  document.getElementById('tabCust').classList.toggle('active', v==='cust');
+}
+
+const HOUSIO_MO = 79;
+const sLeads=document.getElementById('sLeads'), sCost=document.getElementById('sCost'), sReply=document.getElementById('sReply');
+const fmt = n => '$' + Math.round(n).toLocaleString();
+
+let animRAF, animFrom=6252;
+function animateTo(el, target){
+  cancelAnimationFrame(animRAF);
+  const start=performance.now(), from=animFrom, dur=500;
+  function step(t){
+    const p=Math.min((t-start)/dur,1), eased=1-Math.pow(1-p,3);
+    const val=from+(target-from)*eased;
+    el.textContent=fmt(val);
+    if(p<1) animRAF=requestAnimationFrame(step); else animFrom=target;
+  }
+  animRAF=requestAnimationFrame(step);
+}
+
+function recalc(){
+  const leads=+sLeads.value, cost=+sCost.value, reply=+sReply.value/100;
+  document.getElementById('vLeads').textContent=leads;
+  document.getElementById('vCost').textContent='$'+cost;
+  document.getElementById('vReply').textContent=Math.round(reply*100)+'%';
+
+  const themMo = leads*cost;
+  const monthlySave = Math.max(themMo - HOUSIO_MO, 0);
+  const annual = monthlySave*12;
+
+  document.getElementById('themMo').textContent=fmt(themMo);
+  document.getElementById('wasted$').textContent=fmt(Math.round(leads*(1-reply))*cost);
+  document.getElementById('wastedN').textContent=Math.round(leads*(1-reply))+' dead leads';
+  animateTo(document.getElementById('annualSave'), annual);
+}
+[sLeads,sCost,sReply].forEach(s=>s.addEventListener('input',recalc));
+recalc();
+</script>
+</body>
+</html>

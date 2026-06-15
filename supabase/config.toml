@@ -1,0 +1,35 @@
+# Housio — Supabase project config
+# Docs: https://supabase.com/docs/guides/local-development/cli/config
+#
+# Linked cloud project ref: tsyibysbdhvftlayejad
+# (https://tsyibysbdhvftlayejad.supabase.co)
+#
+# Only the Edge Functions config is needed here for deploying. The
+# important bit is per-function `verify_jwt`:
+#   - stripe-webhook / geocode  -> verify_jwt = false  (called by Stripe / the browser pre-auth)
+#   - create-checkout / stripe-connect -> verify_jwt = true (they verify the caller's Supabase JWT)
+project_id = "housio"
+
+# Stripe calls this with a signed payload, not a Supabase JWT.
+[functions.stripe-webhook]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/stripe-webhook/index.ts"
+
+# Called by the browser BEFORE the user is authenticated, so no JWT required.
+[functions.geocode]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/geocode/index.ts"
+
+# Verifies the caller's Supabase JWT (logged-in pro starting checkout).
+[functions.create-checkout]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/create-checkout/index.ts"
+
+# Verifies the caller's Supabase JWT (logged-in pro / homeowner).
+[functions.stripe-connect]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/stripe-connect/index.ts"

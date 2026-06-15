@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build / tooling caches
+.wrangler/
+supabase/.temp/
+.temp/
+
+# Environment & secrets
+.env
+.env.*
+.dev.vars
+*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

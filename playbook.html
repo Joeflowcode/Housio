@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Housio — Bend, OR Launch Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1f2d;--ink2:#1a2b3c;--blue:#1763f7;--blue-dark:#0d4ed0;--blue-light:#eaf1ff;
+  --green:#12b76a;--amber:#f59e0b;--coral:#ff6a4d;--gray:#5a6b7b;--gray-light:#f4f7fa;--gray-mid:#e3e9f0;
+}
+body{font-family:'Inter',sans-serif;color:var(--ink2);line-height:1.65;background:#eef2f6;padding:40px 16px}
+.page{max-width:880px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:0 10px 50px rgba(13,31,45,.10);overflow:hidden}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);line-height:1.2}
+/* header */
+.head{background:linear-gradient(150deg,#0d1f2d,#13314a);color:#fff;padding:48px 52px}
+.head .logo{display:flex;align-items:center;gap:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:22px}
+.head .logo-mark{width:34px;height:34px;background:var(--blue);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.head h1{color:#fff;font-size:2.3rem;letter-spacing:-1px;margin-bottom:10px}
+.head p{color:#aebfce;font-size:1.05rem;max-width:560px}
+.head .pill{display:inline-block;background:rgba(23,99,247,.25);color:#9cc2ff;font-weight:700;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:18px}
+.body{padding:44px 52px}
+/* sections */
+section{margin-bottom:48px}
+.kicker{display:inline-block;background:var(--blue-light);color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:100px;margin-bottom:14px}
+h2{font-size:1.7rem;letter-spacing:-.5px;margin-bottom:8px}
+.lead{color:var(--gray);font-size:1.02rem;margin-bottom:22px}
+h3{font-size:1.18rem;margin:26px 0 10px}
+h4{font-size:1rem;margin:18px 0 6px}
+p{margin-bottom:12px}
+ul,ol{margin:0 0 14px 22px}
+li{margin-bottom:7px}
+strong{color:var(--ink)}
+a{color:var(--blue)}
+.divider{height:1px;background:var(--gray-mid);margin:40px 0}
+/* callout */
+.callout{background:var(--blue-light);border:1px solid #cfe0ff;border-left:4px solid var(--blue);border-radius:10px;padding:18px 22px;margin:18px 0}
+.callout.green{background:#e6faf2;border-color:#a8ecca;border-left-color:var(--green)}
+.callout.amber{background:#fef6e6;border-color:#fbe0a8;border-left-color:var(--amber)}
+.callout h4{margin-top:0}
+/* phase cards */
+.phase{border:1.5px solid var(--gray-mid);border-radius:14px;padding:22px 24px;margin-bottom:16px}
+.phase-tag{display:inline-block;background:var(--ink);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 12px;border-radius:100px;margin-bottom:10px}
+.phase h3{margin-top:4px}
+.phase .goal{font-size:.86rem;color:var(--blue);font-weight:600;margin-bottom:10px}
+/* table */
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--gray-mid)}
+th{background:var(--gray-light);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--ink);font-size:.8rem;letter-spacing:.03em;text-transform:uppercase}
+td strong{color:var(--blue)}
+/* script blocks */
+.script{border:1.5px solid var(--gray-mid);border-radius:12px;margin:16px 0;overflow:hidden}
+.script-head{display:flex;justify-content:space-between;align-items:center;background:var(--gray-light);padding:12px 18px;border-bottom:1px solid var(--gray-mid)}
+.script-head .st{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.92rem;color:var(--ink);display:flex;align-items:center;gap:9px}
+.script-head .emoji{font-size:1.1rem}
+.copy-btn{background:var(--blue);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;transition:background .2s}
+.copy-btn:hover{background:var(--blue-dark)}
+.copy-btn.copied{background:var(--green)}
+.script pre{font-family:'Inter',sans-serif;font-size:.93rem;line-height:1.6;color:var(--ink2);padding:18px;white-space:pre-wrap;background:#fff}
+.script pre .ph{color:var(--coral);font-weight:600}
+.obj{border:1.5px solid var(--gray-mid);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+.obj .q{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--ink);margin-bottom:6px}
+.obj .a{font-size:.94rem;color:var(--ink2)}
+.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0}
+.metric{background:var(--gray-light);border-radius:12px;padding:18px}
+.metric .num{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.6rem;color:var(--blue)}
+.metric .lbl{font-size:.86rem;color:var(--gray);margin-top:2px}
+.toc{background:var(--gray-light);border-radius:12px;padding:20px 24px;margin-bottom:36px}
+.toc h4{margin:0 0 10px}
+.toc ol{margin-bottom:0}
+.toc a{font-weight:600;text-decoration:none}
+.print-btn{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;border:none;padding:13px 22px;border-radius:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:0 8px 30px rgba(13,31,45,.25);z-index:50}
+.foot{background:var(--gray-light);padding:28px 52px;font-size:.84rem;color:var(--gray);text-align:center}
+@media print{
+  body{background:#fff;padding:0}
+  .page{box-shadow:none;border-radius:0;max-width:100%}
+  .print-btn,.copy-btn{display:none}
+  .script,.phase,.obj{break-inside:avoid}
+}
+@media(max-width:600px){
+  .head,.body,.foot{padding-left:24px;padding-right:24px}
+  .metric-grid{grid-template-columns:1fr}
+  body{padding:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="head">
+    <div class="logo"><span class="logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2 3 9v12h6v-7h6v7h6V9z" fill="white"/></svg></span>Housio</div>
+    <div class="pill">Launch Playbook · Bend, Oregon</div>
+    <h1>Your First 90 Days in Bend</h1>
+    <p>A step-by-step plan to launch Housio in Bend &amp; Central Oregon — plus copy-paste scripts to recruit your first 50 pros.</p>
+  </div>
+
+  <div class="body">
+
+    <div class="toc">
+      <h4>What's inside</h4>
+      <ol>
+        <li><a href="#why">Why Bend is a great first market</a></li>
+        <li><a href="#trade">Which trade to launch with</a></li>
+        <li><a href="#strategy">The core strategy: supply first</a></li>
+        <li><a href="#plan">The 90-day plan (3 phases)</a></li>
+        <li><a href="#demand">Where to get homeowners (demand)</a></li>
+        <li><a href="#budget">Budget &amp; success metrics</a></li>
+        <li><a href="#scripts">Cold-outreach scripts (recruit pros)</a></li>
+        <li><a href="#objections">Handling objections</a></li>
+        <li><a href="#apps">The path to iOS &amp; Android apps</a></li>
+      </ol>
+    </div>
+
+    <!-- 1 WHY BEND -->
+    <section id="why">
+      <div class="kicker">01 · The Market</div>
+      <h2>Why Bend is a great first market</h2>
+      <p class="lead">You're not picking Bend by accident — its economy is almost perfectly shaped for a home-services marketplace.</p>
+      <ul>
+        <li><strong>Fast-growing &amp; affluent.</strong> One of the fastest-growing metros in the U.S., with high median home values and lots of in-migration from California and Portland — homeowners with money to spend on services.</li>
+        <li><strong>Huge vacation-rental turnover economy.</strong> Central Oregon runs on tourism. Short-term rentals need <strong>frequent cleaning, handyman, and landscaping turnovers</strong> — recurring, high-frequency demand that spins your flywheel fast.</li>
+        <li><strong>Booming new construction &amp; remodels.</strong> NW Crossing, NE Bend, Petrosa — constant renovation, move-ins, and cleanouts (great for junk removal, painting, cleaning).</li>
+        <li><strong>Strong seasons = year-round demand.</strong> Snowy winters (heating, snow removal, gutters) and hot, dry, wildfire-prone summers (AC, irrigation, defensible-space landscaping, pressure washing).</li>
+        <li><strong>Tight-knit online community.</strong> Bend has unusually active Facebook groups, Nextdoor, and an engaged r/Bend — meaning <strong>free, high-trust demand channels</strong> where "anyone know a good cleaner?" posts happen daily.</li>
+      </ul>
+      <div class="callout green">
+        <h4>Your unfair advantage</h4>
+        <p style="margin-bottom:0">You already understand the junk-removal world through Northwest Junk Pros. That means you know how to find, vet, and talk to local service operators — the single hardest part of building a marketplace. Use it.</p>
+      </div>
+    </section>
+
+    <!-- 2 TRADE -->
+    <section id="trade">
+      <div class="kicker">02 · The Wedge</div>
+      <h2>Which trade to launch with</h2>
+      <p class="lead">Don't launch all 10 categories. Win <strong>one</strong> trade completely, then expand. Pick a trade with high <em>frequency</em> so transactions (and reviews) pile up quickly.</p>
+
+      <div class="callout">
+        <h4>Recommended: start with House Cleaning 🧹</h4>
+        <p style="margin-bottom:0">It's the fastest flywheel in Bend — vacation-rental turnovers happen almost daily and residential cleaning repeats weekly/biweekly. Frequent jobs = fast reviews = quick proof the model works. There are also plenty of cleaners to recruit.</p>
+      </div>
+
+      <p><strong>Then fast-follow with two more in month 2–3:</strong></p>
+      <ul>
+        <li><strong>Junk Removal</strong> — your wheelhouse. Higher ticket, strong demand from moves &amp; remodels, and you can personally vouch for quality.</li>
+        <li><strong>Landscaping / Lawn &amp; Yard</strong> — high volume in Bend spring–fall, plus snow removal in winter.</li>
+      </ul>
+      <div class="callout amber">
+        <p style="margin-bottom:0"><strong>Prefer to lead with junk removal instead?</strong> Totally valid given your experience — it lowers your execution risk on quality and recruiting. The only tradeoff: junk removal is lower-frequency (a household needs it ~once or twice a year), so your flywheel spins slower. If you go this route, lean harder on B2B partners (realtors, property managers, contractors) who generate repeat volume.</p>
+      </div>
+    </section>
+
+    <!-- 3 STRATEGY -->
+    <section id="strategy">
+      <div class="kicker">03 · The Strategy</div>
+      <h2>The core strategy: supply first</h2>
+      <p class="lead">Every marketplace faces the chicken-and-egg problem: homeowners won't come without pros, pros won't stay without homeowners. Here's how you break it without spending millions like Thumbtack did.</p>
+      <ol>
+        <li><strong>Recruit a small founding roster first</strong> (10–20 cleaners). So when the first homeowner shows up, there's someone ready to serve them.</li>
+        <li><strong>Be the matchmaker manually at the start</strong> ("concierge MVP"). You don't need fancy software — when a request comes in, you personally text it to 2–3 matching pros. This is how Airbnb, DoorDash, and Thumbtack all started.</li>
+        <li><strong>Turn on demand in a tight radius</strong> (just Bend, not all of Oregon). Concentrated demand keeps your founding pros busy and happy.</li>
+        <li><strong>Harvest reviews relentlessly.</strong> Every completed job → ask for a review. Reviews are the fuel that makes the site credible to the next homeowner.</li>
+        <li><strong>Only then scale supply &amp; add trades.</strong> Expand once pros are getting real jobs and asking you for more.</li>
+      </ol>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 4 PLAN -->
+    <section id="plan">
+      <div class="kicker">04 · The Plan</div>
+      <h2>The 90-day launch plan</h2>
+      <p class="lead">Three phases. Each builds on the last. Don't skip ahead.</p>
+
+      <div class="phase">
+        <span class="phase-tag">Week 1</span>
+        <h3>Phase 0 — Foundation</h3>
+        <div class="goal">Goal: be ready to take a lead by the end of the week</div>
+        <ul>
+          <li>Add <strong>"Serving Bend &amp; Central Oregon"</strong> to the Housio site; set the launch trade to House Cleaning.</li>
+          <li>Grab a domain, a free <strong>Google Voice</strong> business number, and a <strong>Google Business Profile</strong> (huge for local search — free).</li>
+          <li>Set up a dead-simple back office: an <strong>Airtable or Google Sheet</strong> for pros + leads, and your phone for matching. (No need to build the real backend yet.)</li>
+          <li>Lock in your <strong>Founding Pro offer</strong> (see scripts below): first 90 days free, founding badge, locked-in founder rate.</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <span class="phase-tag">Weeks 2–4</span>
+        <h3>Phase 1 — Recruit your founding pros</h3>
+        <div class="goal">Goal: 15–20 cleaners signed up and ready</div>
+        <ul>
+          <li>Build a list of 50+ Bend cleaners (sources listed in the scripts section).</li>
+          <li>Work the outreach scripts: <strong>text and call first</strong> (best response from tradespeople), email/DM as backup.</li>
+          <li>Onboard 15–20. Explain the fair model, collect their service area + best contact, set expectations.</li>
+          <li>Prioritize pros <strong>already paying for Thumbtack/Angi</strong> — they feel the pain most and convert fastest.</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <span class="phase-tag">Weeks 4–8</span>
+        <h3>Phase 2 — Turn on demand, deliver first jobs</h3>
+        <div class="goal">Goal: 25–50 completed jobs with reviews</div>
+        <ul>
+          <li>Publish local SEO pages: "House Cleaning in Bend, OR," "Vacation Rental Cleaning Bend," etc.</li>
+          <li>Run a small <strong>Google Ads / Local Services Ads</strong> budget ($300–600/mo) for "house cleaning Bend."</li>
+          <li>Post and answer in <strong>Bend Facebook groups, Nextdoor, and r/Bend</strong> (free demand — see channel list).</li>
+          <li>Land <strong>2–3 B2B partners</strong>: a property manager, a realtor, an Airbnb host. These generate repeat volume.</li>
+          <li>Match leads to pros manually. After every job: <strong>ask the homeowner for a review.</strong></li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <span class="phase-tag">Weeks 8–13</span>
+        <h3>Phase 3 — Prove the loop &amp; expand</h3>
+        <div class="goal">Goal: a repeatable weekly rhythm + first paying pros</div>
+        <ul>
+          <li>Measure your unit economics: cost per homeowner lead, lead→job conversion, pro retention.</li>
+          <li>Add <strong>Junk Removal</strong> and <strong>Landscaping</strong> as trades #2 and #3.</li>
+          <li>Convert founding pros to paid: a <strong>flat monthly subscription (~$99–$149/mo)</strong> or pay-only-when-a-customer-replies.</li>
+          <li>When the loop is humming, that's your signal to build the real backend (Supabase + Stripe) and, later, the apps.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 5 DEMAND -->
+    <section id="demand">
+      <div class="kicker">05 · Demand</div>
+      <h2>Where to get homeowners</h2>
+      <p class="lead">Free and cheap channels first. Bend rewards local, community-driven marketing.</p>
+      <table>
+        <tr><th>Channel</th><th>Cost</th><th>Why it works in Bend</th></tr>
+        <tr><td><strong>Google Business Profile</strong></td><td>Free</td><td>Shows up in "near me" searches and Maps. Non-negotiable.</td></tr>
+        <tr><td><strong>Bend Facebook groups</strong></td><td>Free</td><td>Daily "anyone recommend a…?" posts. Answer them.</td></tr>
+        <tr><td><strong>Nextdoor</strong></td><td>Free</td><td>Hyper-local, high trust, very active in Bend neighborhoods.</td></tr>
+        <tr><td><strong>r/Bend (Reddit)</strong></td><td>Free</td><td>Engaged local audience; be helpful, not spammy.</td></tr>
+        <tr><td><strong>Local SEO pages</strong></td><td>Free*</td><td>Rank for "house cleaning Bend OR" — buyers with intent.</td></tr>
+        <tr><td><strong>Google Local Services Ads</strong></td><td>$300–600/mo</td><td>Pay-per-lead, top of search, "Google Guaranteed" badge.</td></tr>
+        <tr><td><strong>Property managers &amp; realtors</strong></td><td>Free (B2B)</td><td>Recurring volume: turnover cleans, listing cleans, cleanouts.</td></tr>
+        <tr><td><strong>Vacation-rental hosts</strong></td><td>Free (B2B)</td><td>Frequent, repeat turnover cleaning — your best recurring demand.</td></tr>
+      </table>
+      <div class="callout">
+        <p style="margin-bottom:0"><strong>The B2B shortcut:</strong> One property manager with 30 vacation rentals can generate more recurring jobs than 100 individual homeowners. Pursue them early — they're how you get to liquidity fast.</p>
+      </div>
+    </section>
+
+    <!-- 6 BUDGET -->
+    <section id="budget">
+      <div class="kicker">06 · Numbers</div>
+      <h2>Budget &amp; success metrics</h2>
+      <h3>Lean monthly budget to start</h3>
+      <table>
+        <tr><th>Item</th><th>Cost</th></tr>
+        <tr><td>Domain + Google Voice number</td><td>~$20/mo</td></tr>
+        <tr><td>Google / Local Services Ads</td><td>$300–600/mo</td></tr>
+        <tr><td>Tools (Airtable, forms, later Supabase + Stripe — all free tiers to start)</td><td>$0–50/mo</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>Under $700/mo — bootstrappable</strong></td></tr>
+      </table>
+      <h3>What "working" looks like by Day 90</h3>
+      <div class="metric-grid">
+        <div class="metric"><div class="num">20+</div><div class="lbl">Active pros (cleaning + 1–2 other trades)</div></div>
+        <div class="metric"><div class="num">100+</div><div class="lbl">Homeowner project requests handled</div></div>
+        <div class="metric"><div class="num">40+</div><div class="lbl">Completed jobs with real reviews</div></div>
+        <div class="metric"><div class="num">$XX</div><div class="lbl">Known cost to acquire a lead (your CAC)</div></div>
+      </div>
+      <p>If you hit these, you've proven the model in one city and one trade — and you have the data to expand to a second city or raise money if you want to.</p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 7 SCRIPTS -->
+    <section id="scripts">
+      <div class="kicker">07 · Recruiting</div>
+      <h2>Cold-outreach scripts</h2>
+      <p class="lead">Your goal: sign 50 founding pros. Lead with the pain Thumbtack causes, and the fact that you're <strong>free for 90 days</strong>. Tap "Copy" on any script and fill in the <span style="color:var(--coral);font-weight:600">[red placeholders]</span>.</p>
+
+      <h3>Where to find Bend pros</h3>
+      <ul>
+        <li><strong>Google Maps</strong> — search "house cleaning Bend OR"; list every business + solo operator.</li>
+        <li><strong>Thumbtack / Angi / Yelp</strong> — these pros are <em>already paying for leads</em>. They're your warmest targets.</li>
+        <li><strong>Facebook</strong> — local business pages + service groups.</li>
+        <li><strong>Nextdoor &amp; r/Bend</strong> — "recommendations" threads name the active pros.</li>
+        <li><strong>Out in the world</strong> — branded trucks, yard signs, Craigslist services.</li>
+        <li><strong>Referrals</strong> — every pro you sign: "Know two other cleaners who'd want free leads?"</li>
+      </ul>
+
+      <div class="callout green">
+        <h4>🏅 The Founding Pro offer (your hook)</h4>
+        <ul style="margin-bottom:0">
+          <li>First <strong>90 days of leads totally free</strong></li>
+          <li><strong>"Founding Pro" badge</strong> + top placement on the site</li>
+          <li><strong>Locked-in founder rate</strong> after the free period (lower than everyone who joins later)</li>
+          <li>A direct line to you to help shape the platform</li>
+        </ul>
+      </div>
+
+      <div class="script">
+        <div class="script-head"><span class="st"><span class="emoji">💬</span>Text / SMS — best first touch</span><button class="copy-btn">Copy</button></div>
+<pre>Hi <span class="ph">[Name]</span> — this is <span class="ph">[Your Name]</span> here in Bend. I'm launching Housio, a local site that connects homeowners straight with cleaners like you.
+
+Unlike Thumbtack, you ONLY pay if a customer actually replies — and the first 90 days are completely free. No resold leads, no dead ends.
+
+I'm hand-picking a few founding pros. Can I add you? Takes 2 minutes. 👍</pre>
+      </div>
+
+      <div class="script">
+        <div class="script-head"><span class="st"><span class="emoji">📞</span>Cold call — opener + pitch</span><button class="copy-btn">Copy</button></div>
+<pre>OPENER:
+"Hey, is this <span class="ph">[Name]</span>? Hi <span class="ph">[Name]</span>, my name's <span class="ph">[Your Name]</span> — I run a local company here in Bend called Housio. I'll be quick — got 60 seconds?"
+
+PITCH (if yes):
+"I'm building a better way for Central Oregon homeowners to find cleaners — think Thumbtack, but built so pros don't get burned. Here's the difference: a homeowner posts what they need, and I match them with just 3 or 4 trusted local cleaners — not 10. You only pay when a customer actually messages you back. No dead-end leads, no contacts resold to your competitors.
+
+And because you'd be one of my founding pros, your first 90 days are completely free, plus you lock in the lowest rate I'll ever offer.
+
+I just need your name, your service area, and the best number to send leads to. Want me to add you?"</pre>
+      </div>
+
+      <div class="script">
+        <div class="script-head"><span class="st"><span class="emoji">📧</span>Cold email</span><button class="copy-btn">Copy</button></div>
+<pre>Subject: Free cleaning leads in Bend (founding pros only)
+
+Hi <span class="ph">[Name]</span>,
+
+I'm <span class="ph">[Your Name]</span>, founder of Housio — a new local marketplace connecting Bend homeowners with trusted cleaners.
+
+I built it because I kept hearing the same thing from pros: Thumbtack and Angi charge you for leads that never reply, resell the same lead to 8 competitors, and raise prices whenever they feel like it.
+
+Housio is the opposite:
+ • You only pay when a customer actually replies
+ • Each lead goes to 3–4 pros max — never a bidding war
+ • Flat, transparent pricing — no surprises
+ • Junk/spam leads are refunded, always
+
+I'm signing a small group of founding pros in Bend and would love you to be one. Founding pros get their first 90 days free, a "Founding Pro" badge, and a locked-in founder rate.
+
+Reply "I'm in" or call/text me at <span class="ph">[Your Number]</span> and I'll get you set up in 5 minutes.
+
+Thanks,
+<span class="ph">[Your Name]</span>
+Housio · Bend &amp; Central Oregon
+<span class="ph">[Your Number]</span></pre>
+      </div>
+
+      <div class="script">
+        <div class="script-head"><span class="st"><span class="emoji">📱</span>Facebook / Instagram DM</span><button class="copy-btn">Copy</button></div>
+<pre>Hey <span class="ph">[Name]</span>! Love what you're doing with <span class="ph">[Business Name]</span>. I'm launching Housio — a local site that sends Bend homeowners straight to cleaners like you.
+
+The catch? There isn't one for founding pros: first 90 days free, and you only ever pay when a customer actually replies (unlike Thumbtack). Mind if I add you to the launch group? 🙌</pre>
+      </div>
+
+      <div class="script">
+        <div class="script-head"><span class="st"><span class="emoji">🎙️</span>Voicemail (keep it short)</span><button class="copy-btn">Copy</button></div>
+<pre>Hi <span class="ph">[Name]</span>, this is <span class="ph">[Your Name]</span> with Housio here in Bend. I'm signing up a few founding cleaners to get free local leads — no Thumbtack-style fees. I'll shoot you a quick text too. If you're interested, call me back at <span class="ph">[Your Number]</span>. Thanks!</pre>
+      </div>
+
+      <div class="script">
+        <div class="script-head"><span class="st"><span class="emoji">🔁</span>Follow-up (2–3 days later)</span><button class="copy-btn">Copy</button></div>
+<pre>Hey <span class="ph">[Name]</span>, just circling back on Housio. I've got <span class="ph">[#]</span> founding cleaner spots left in Bend and I'd hate for you to miss the free 90 days + locked-in rate. Want me to add you? No pressure either way. 🙂</pre>
+      </div>
+    </section>
+
+    <!-- 8 OBJECTIONS -->
+    <section id="objections">
+      <div class="kicker">08 · Objections</div>
+      <h2>Handling the 5 objections you'll hear</h2>
+
+      <div class="obj">
+        <div class="q">"I already use Thumbtack / Angi."</div>
+        <div class="a">"Perfect — then you know exactly the problem I'm solving. Keep using them. Housio is free for your first 90 days, so there's zero risk to add it as another source of jobs. If my leads are better, you'll naturally do more with me. If not, you've lost nothing."</div>
+      </div>
+      <div class="obj">
+        <div class="q">"I'm too busy / already booked out."</div>
+        <div class="a">"Love to hear it — that tells me you do great work, which is exactly who I want. No obligation to take every lead. When you have a gap, or want a higher-value job, Housio's there. And founding spots won't be free forever."</div>
+      </div>
+      <div class="obj">
+        <div class="q">"What's the catch? Why is it free?"</div>
+        <div class="a">"Honest answer: I'm launching in Bend and I need great pros to make it work. Free for founding pros is how I earn your trust. Down the road I make money on a small flat fee — but only from pros who are getting real jobs. If you're not winning work, I'm not charging you."</div>
+      </div>
+      <div class="obj">
+        <div class="q">"How do you even have customers yet?"</div>
+        <div class="a">"Fair question — I'm running ads and working Bend's local groups and property managers right now. I'm lining up pros first so that when a homeowner asks, I've got someone great ready. You'd be in from day one, which is why founding pros get the best deal."</div>
+      </div>
+      <div class="obj">
+        <div class="q">"I tried something like this before and it flopped."</div>
+        <div class="a">"I get it — most of these treat pros like ATMs. That's the whole reason Housio caps leads at 3–4 pros, refunds junk leads, and only charges when a customer replies. Try it free for 90 days and judge it on the jobs, not the promise."</div>
+      </div>
+    </section>
+
+    <!-- 9 APPS -->
+    <section id="apps">
+      <div class="kicker">09 · The Apps</div>
+      <h2>The path to iOS &amp; Android apps</h2>
+      <p class="lead">You'll want native apps — but the smart move is to earn them, not start with them. Here's the sequence so you don't burn money building an app nobody uses yet.</p>
+      <ol>
+        <li><strong>Now → web works on phones already.</strong> Your Housio site already works in any phone browser. That's enough to launch and validate in Bend.</li>
+        <li><strong>Next → make it a PWA (installable web app).</strong> A small upgrade lets homeowners and pros "Add to Home Screen" — it looks and feels like an app, works offline-ish, sends notifications, and costs almost nothing. Great middle step.</li>
+        <li><strong>Then → real native apps once the loop is proven.</strong> When you have steady jobs flowing, we build true iOS + Android apps from <em>one</em> codebase using <strong>React Native (Expo)</strong> — so you're not paying to build two separate apps. This is also when the Supabase + Stripe backend becomes essential (the apps need a real server to talk to).</li>
+      </ol>
+      <div class="callout">
+        <p style="margin-bottom:0"><strong>When you're ready, I can help with all of it</strong> — turning Housio into a PWA first, then scaffolding the React Native app, wiring up Supabase auth, Stripe payments, and push notifications. Just say the word and we'll start with the PWA.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="foot">
+    Housio — Bend, Oregon Launch Playbook · Built for <span style="color:var(--ink);font-weight:600">you</span> · Tip: hit "Print / Save PDF" to keep a copy
+  </div>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+
+<script>
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const pre = btn.closest('.script').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+    }).catch(() => {
+      // fallback
+      const r = document.createRange(); r.selectNode(pre);
+      window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+      try { document.execCommand('copy'); btn.textContent='✓ Copied'; btn.classList.add('copied'); setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},1800);} catch(e){}
+      window.getSelection().removeAllRanges();
+    });
+  });
+});
+</script>
+</body>
+</html>
