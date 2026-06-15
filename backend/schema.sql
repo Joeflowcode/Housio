@@ -47,6 +47,8 @@ create table if not exists pros (
   geo                geography(point,4326),  -- store as (lng,lat) for radius search
   radius_miles       int default 25,
   verified           boolean default false,
+  background_check_status text default 'pending',  -- 'pending', 'passed', 'failed', 'expired'
+  background_check_date timestamptz,
   founding_pro       boolean default false,
   rating             numeric(2,1) default 0,
   jobs_count         int default 0,
