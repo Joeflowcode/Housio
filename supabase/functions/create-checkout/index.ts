@@ -2,7 +2,7 @@
 //  Housio — Create Checkout (Supabase Edge Function)
 //
 //  MONETIZATION v2: pro access is FREE. Housio does not charge pros a
-//  monthly subscription — revenue comes from a take rate on completed,
+//  recurring access fee — revenue comes from a take rate on completed,
 //  on-platform jobs (see stripe-connect). So for any pro whose
 //  locked_price_cents is 0 (which is everyone today), this function
 //  refuses to start a subscription and simply tells the client there's
@@ -12,7 +12,7 @@
 //  OPTIONAL paid tier (premium tools / featured placement). If you ever
 //  set a pro's locked_price_cents > 0, this checks them out at exactly
 //  that locked amount — the DB stays the source of truth, never the
-//  browser — so a founding pro's locked rate can never be tampered with.
+//  browser. Launch access remains free.
 //
 //  Deploy:  supabase functions deploy create-checkout
 //  Secrets: STRIPE_SECRET_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
           product: productId,
           recurring: { interval: "month" },
           unit_amount: unitAmount,
-          // Tag the price so the webhook can verify the founding lock.
+          // Tag the price so the webhook can verify the DB lock.
           // (price_data nicknames aren't supported; metadata lives on the sub.)
         },
       }],

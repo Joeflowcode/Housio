@@ -17,8 +17,9 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
 });
 const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET")!;
 
-// Service-role client BYPASSES RLS. This is trusted server code, so
-// it's the only thing allowed to write the subscriptions table.
+// Service-role client BYPASSES RLS. This is trusted server code, so it
+// is allowed to mirror Stripe events into payments and optional future
+// subscription rows.
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -60,13 +61,12 @@ Deno.serve(async (req) => {
 
         const proId = await proIdForCustomer(sub.customer as string);
 
-        // ── Locked-price enforcement (server-side, for life) ────────
+        // ── Optional paid-tier price guard (server-side) ────────────
         // Pro access is FREE today, so subscriptions normally won't
         // exist. This guards a future OPTIONAL paid tier: the DB is the
-        // source of truth for a pro's locked price, and if Stripe ever
-        // reports a higher amount for a founding pro we DOWN-CORRECT the
-        // subscription back to the locked amount so the promise can
-        // never silently break.
+        // source of truth for a pro's locked optional-tier price. If
+        // Stripe ever reports a higher amount for a founding pro, we
+        // down-correct the subscription back to the locked amount.
         const founding = await foundingLockFor(proId);
         const currentItem = sub.items.data[0];
         const currentAmount = currentItem?.price.unit_amount ?? null;
@@ -177,7 +177,7 @@ async function proIdForCustomer(customerId: string): Promise<string | null> {
   return data?.id ?? null;
 }
 
-// The founding lock that drives server-side locked-price enforcement
+// The DB lock that guards any future optional paid tier
 // (for the optional paid tier; access itself is free).
 async function foundingLockFor(
   proId: string | null,

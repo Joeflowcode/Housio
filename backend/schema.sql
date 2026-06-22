@@ -52,8 +52,8 @@ create table if not exists pros (
   founding_pro       boolean default false,
   rating             numeric(2,1) default 0,
   jobs_count         int default 0,
-  stripe_customer_id text,                   -- billing (subscriptions)
-  stripe_account_id  text,                   -- ONLY if you add Stripe Connect later
+  stripe_customer_id text,                   -- optional paid tier / Stripe customer
+  stripe_account_id  text,                   -- Stripe Connect payouts
   created_at         timestamptz default now()
 );
 
@@ -76,14 +76,14 @@ create table if not exists projects (
   created_at   timestamptz default now()
 );
 
--- ── Leads (a project matched to a pro = the billable event) ───────
+-- ── Leads (a project matched to a pro; free to receive/respond) ───
 create table if not exists leads (
   id         uuid primary key default uuid_generate_v4(),
   project_id uuid not null references projects(id) on delete cascade,
   pro_id     uuid not null references pros(id) on delete cascade,
   status     lead_status not null default 'sent',
-  price      numeric(10,2),
-  charged    boolean default false,
+  price      numeric(10,2),                  -- legacy/back-compat only
+  charged    boolean default false,          -- legacy/back-compat only
   created_at timestamptz default now(),
   unique (project_id, pro_id)               -- a pro can't get the same lead twice
 );
@@ -99,7 +99,7 @@ create table if not exists reviews (
   created_at   timestamptz default now()
 );
 
--- ── Subscriptions (mirror of Stripe — written ONLY by the webhook) ─
+-- ── Optional paid-tier subscriptions (unused for free launch) ─────
 create table if not exists subscriptions (
   id                     uuid primary key default uuid_generate_v4(),
   pro_id                 uuid references pros(id) on delete cascade,
@@ -183,8 +183,8 @@ create policy "leads homeowner read" on leads for select using (
 create policy "reviews public read"    on reviews for select using ( true );
 create policy "reviews homeowner write" on reviews for insert with check ( homeowner_id = (select auth.uid()) );
 
--- subscriptions: pro reads own. NO write policy on purpose →
--- only the service_role key (your Stripe webhook) can write here.
+-- optional paid-tier subscriptions: pro reads own. NO write policy on
+-- purpose → only trusted server code can write here.
 create policy "subs pro read" on subscriptions for select using (
   exists (select 1 from pros p where p.id = pro_id and p.profile_id = (select auth.uid())) );
 
@@ -290,13 +290,12 @@ exception when duplicate_object then null; end $$;
 do $$ begin create type verify_status as enum ('unverified','pending','verified','rejected');
 exception when duplicate_object then null; end $$;
 
--- ── Pro onboarding + founding-price columns (additive) ────────────
---  locked_price_cents is the PERMANENT monthly price. Founding pros
---  are $79 (7900¢) for life; standard pros are $149 (14900¢). The
---  enforce_pro_pricing() trigger below makes the founding price
---  impossible to raise once set — server-side, not marketing copy.
+-- ── Pro onboarding + access columns (additive) ────────────────────
+--  Housio access is free for pros. locked_price_cents remains for a
+--  future optional paid tier, but the default and current enforced
+--  value are 0 so joining, receiving leads, and messaging are free.
 alter table pros add column if not exists plan               pro_plan      not null default 'founding';
-alter table pros add column if not exists locked_price_cents int           not null default 7900;
+alter table pros add column if not exists locked_price_cents int           not null default 0;
 alter table pros add column if not exists phone              text;
 alter table pros add column if not exists website            text;
 alter table pros add column if not exists address            text;
@@ -312,11 +311,12 @@ do $$ begin
   alter table pros add constraint pros_profile_uniq unique (profile_id);
 exception when duplicate_object then null; when duplicate_table then null; end $$;
 
--- ── Subscription columns that mirror founding status (webhook-written)
+-- ── Optional paid-tier columns (webhook-written if enabled later)
 alter table subscriptions add column if not exists is_founding        boolean not null default false;
 alter table subscriptions add column if not exists locked_price_cents int;
 
--- ── Lead columns for the "pay only when the customer replies" rule ─
+-- ── Lead pipeline columns. Leads/messages are free; these remain for
+--     status history and compatibility with older deployed schemas.
 alter table leads add column if not exists responded_at  timestamptz;
 alter table leads add column if not exists refund_reason text;
 alter table leads add column if not exists charged_at    timestamptz;
@@ -450,26 +450,24 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 
 -- ════════════════════════════════════════════════════════════════
---  FOUNDING-PRICE ENFORCEMENT (server-side, permanent)
---  • On insert: founding → 7900¢ + plan 'founding'; else 14900¢.
---  • On update: a founding pro can NEVER lose founding status and
---    their locked price can NEVER rise. This is the $79-for-life rule.
+--  FREE ACCESS ENFORCEMENT (server-side)
+--  • On insert: all pros get locked_price_cents = 0.
+--  • On update: founding status cannot be revoked and the locked price
+--    can never rise. Future paid tiers must be explicit and opt-in.
 -- ════════════════════════════════════════════════════════════════
 create or replace function enforce_pro_pricing()
 returns trigger language plpgsql set search_path = public as $$
 begin
   if tg_op = 'INSERT' then
-    -- Note: locked_price_cents has a column default, so it's never NULL
-    -- here — we must set the correct tier price explicitly, not coalesce.
     if new.founding_pro or new.plan = 'founding' then
       new.founding_pro       := true;
       new.plan               := 'founding';
-      new.locked_price_cents := 7900;   -- $79/mo, locked for life
+      new.locked_price_cents := 0;      -- free for life
     else
       new.plan               := 'standard';
-      new.locked_price_cents := 14900;  -- $149/mo
+      new.locked_price_cents := 0;      -- free access; paid tier is opt-in later
     end if;
-  else -- UPDATE: founding pricing is irreversible + can only go down
+  else -- UPDATE: founding status is irreversible + locked price can only go down
     if old.founding_pro then
       new.founding_pro       := true;
       new.plan               := 'founding';
@@ -554,31 +552,24 @@ create trigger trg_match_project
   for each row execute function match_project();
 
 -- ════════════════════════════════════════════════════════════════
---  PAY-ONLY-WHEN-THE-CUSTOMER-REPLIES billing.
---  A message from the project's homeowner is the billable event: it
---  flips the lead to 'replied' and charges the pro the trade's
---  base_lead_price exactly once. A pro's own messages are free.
+--  FREE LEAD MESSAGING.
+--  A message from the project's homeowner moves the lead to 'replied'.
+--  Leads and messages are free; Housio earns from completed
+--  on-platform payments handled by Stripe Connect.
 -- ════════════════════════════════════════════════════════════════
 create or replace function handle_new_message()
 returns trigger language plpgsql security definer set search_path = public as $$
-declare v_homeowner uuid; v_trade int; v_price numeric(10,2);
+declare v_homeowner uuid;
 begin
-  select pr.homeowner_id, pr.trade_id
-    into v_homeowner, v_trade
+  select pr.homeowner_id
+    into v_homeowner
   from leads l join projects pr on pr.id = l.project_id
   where l.id = new.lead_id;
 
   if new.sender_id = v_homeowner then
-    select base_lead_price into v_price from trades where id = v_trade;
-    -- charge exactly once (the partial unique-ish guard: charged = false)
     update leads
-       set charged       = true,
-           price         = coalesce(price, v_price, 35),
-           charged_at    = coalesce(charged_at, now()),
-           responded_at  = coalesce(responded_at, now())
-     where id = new.lead_id and charged = false;
-    -- always reflect that the homeowner engaged
-    update leads set status = 'replied'
+       set status = 'replied',
+           responded_at = coalesce(responded_at, now())
      where id = new.lead_id and status in ('sent','viewed');
   else
     -- pro (or other) replied first → just mark the lead viewed
@@ -649,8 +640,7 @@ begin
   end if;
   update leads
      set status        = _status,
-         refund_reason = coalesce(_reason, refund_reason),
-         charged       = case when _status = 'refunded' then false else charged end
+         refund_reason = coalesce(_reason, refund_reason)
    where id = _lead;
 end; $$;
 
@@ -758,17 +748,13 @@ update zip_geo
 --    • a completion photo is OPTIONAL dispute evidence, never a gate.
 --
 --  Everything below is additive + idempotent — safe to re-run on top
---  of the schema above. Later function definitions intentionally
---  REPLACE the earlier ones (founding pricing + lead charging).
+--  of the schema above. The function definitions restate the current
+--  model so older deployed schemas are repaired when this file runs.
 -- ════════════════════════════════════════════════════════════════
 
--- ── 1. Founding pros are FREE for life ────────────────────────────
---  Replaces the earlier enforce_pro_pricing(): founding/launch pros
---  lock at $0 (was $79). The price-lock still guarantees it can only
---  ever go DOWN on update — so "free for life" is enforced server-side,
---  not just promised in marketing. Standard pros also have $0 locked
---  access here; any future paid tier is OPT-IN and would be added
---  separately, never as a barrier to joining or getting leads.
+-- ── 1. Pros are FREE to join ──────────────────────────────────────
+--  Founding/launch pros lock at $0, standard pros also lock at $0, and
+--  any future paid tier must be opt-in rather than a gate to leads.
 create or replace function enforce_pro_pricing()
 returns trigger language plpgsql set search_path = public as $$
 begin
@@ -793,11 +779,10 @@ begin
   return new;
 end; $$;
 
--- ── 2. Leads & messages are FREE (kill pay-per-lead) ──────────────
---  Replaces the earlier handle_new_message(): we KEEP the lead status
---  transitions (sent → viewed → replied) so the pipeline still reads
---  correctly, but we NEVER charge the pro for a message. base_lead_price
---  is left in the trades table for reporting/back-compat only.
+-- ── 2. Leads & messages are FREE ──────────────────────────────────
+--  Keep lead status transitions (sent → viewed → replied), but never
+--  charge the pro for a message. base_lead_price is kept only for
+--  reporting/back-compat.
 create or replace function handle_new_message()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare v_homeowner uuid;
