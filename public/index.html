@@ -572,7 +572,8 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
       <div class="cat-card reveal rd1"><div class="cat-icon ci-2">🚪</div><div class="cat-name">Garage Door</div><div class="cat-count">Repair &amp; install</div></div>
       <div class="cat-card reveal rd2"><div class="cat-icon ci-3">📦</div><div class="cat-name">Movers</div><div class="cat-count">Local &amp; long-distance</div></div>
       <div class="cat-card reveal rd3"><div class="cat-icon ci-4">🚧</div><div class="cat-name">Fencing</div><div class="cat-count">Build &amp; repair</div></div>
-      <div class="cat-card reveal rd4"><div class="cat-icon ci-5">➕</div><div class="cat-name">More services</div><div class="cat-count">20+ more trades</div></div>
+      <div class="cat-card reveal rd4"><div class="cat-icon ci-5">🏋️</div><div class="cat-name">Personal Training</div><div class="cat-count">In-home &amp; private coaching</div></div>
+      <div class="cat-card reveal"><div class="cat-icon ci-1">➕</div><div class="cat-name">More services</div><div class="cat-count">20+ more trades</div></div>
     </div>
   </div>
 </section>
@@ -806,6 +807,8 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
         <h5>Services</h5>
         <ul>
           <li><a href="#">House Cleaning</a></li>
+          <li><a href="#">Carpet Cleaning</a></li>
+          <li><a href="#">Personal Training</a></li>
           <li><a href="#">Plumbing</a></li>
           <li><a href="#">HVAC</a></li>
           <li><a href="#">Roofing</a></li>
@@ -1017,10 +1020,10 @@ async function geocodeZip(zip) {
   try { await callFn('geocode', { zip }); } catch (e) { /* trigger falls back to zip_geo */ }
 }
 
-// ── All 41 services ───────────────────────────────────────────
-const SERVICES = ['House Cleaning','Vacation Rental Cleaning','Defensible Space & Fire Prep','Plumbing','HVAC','Electrical','Appliance Repair','Roofing','Landscaping','Painting','Handyman','Junk Removal','Movers','Power Washing','Window Washing','Gutter Cleaning','Snow Removal','Pest Control','Carpet Cleaning','Garage Door','Tree Service','Lawn Care','Irrigation & Sprinklers','Fencing','Deck & Patio','Pool & Spa Service','Flooring','Drywall','Tile','Siding','Insulation','Concrete & Masonry','Cabinets & Countertops','Windows & Doors','Solar','Foundation & Waterproofing','Air Duct Cleaning','Locksmith','Home Inspection','Mold Remediation','Security & Smart Home','Interior Design','Chimney & Fireplace'];
-// Quick-pick services shown first (TaskRabbit-style — don't make pros scroll 41 chips).
-const POPULAR_SERVICES = ['House Cleaning','Handyman','Landscaping','Lawn Care','Plumbing','HVAC','Painting','Junk Removal','Power Washing','Snow Removal','Electrical','Roofing'];
+// ── All 42 services ───────────────────────────────────────────
+const SERVICES = ['House Cleaning','Vacation Rental Cleaning','Defensible Space & Fire Prep','Plumbing','HVAC','Electrical','Appliance Repair','Roofing','Landscaping','Painting','Handyman','Junk Removal','Movers','Power Washing','Window Washing','Gutter Cleaning','Snow Removal','Pest Control','Carpet Cleaning','Personal Training','Garage Door','Tree Service','Lawn Care','Irrigation & Sprinklers','Fencing','Deck & Patio','Pool & Spa Service','Flooring','Drywall','Tile','Siding','Insulation','Concrete & Masonry','Cabinets & Countertops','Windows & Doors','Solar','Foundation & Waterproofing','Air Duct Cleaning','Locksmith','Home Inspection','Mold Remediation','Security & Smart Home','Interior Design','Chimney & Fireplace'];
+// Quick-pick services shown first (TaskRabbit-style — don't make pros scroll 42 chips).
+const POPULAR_SERVICES = ['House Cleaning','Carpet Cleaning','Personal Training','Handyman','Landscaping','Lawn Care','Plumbing','HVAC','Painting','Junk Removal','Power Washing','Snow Removal','Electrical','Roofing'];
 
 // ── State ─────────────────────────────────────────────────────
 let currentUser    = null;  // Supabase auth.User

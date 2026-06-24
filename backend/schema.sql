@@ -231,6 +231,7 @@ insert into trades (name, slug, base_lead_price) values
   ('Vacation Rental Cleaning','vacation-rental-cleaning',30),
   ('Defensible Space & Fire Prep','defensible-space',45),
   ('Carpet Cleaning','carpet-cleaning',25),
+  ('Personal Training','personal-training',25),
   ('Power Washing','power-washing',25),
   ('Window Washing','window-washing',25),
   ('Gutter Cleaning','gutter-cleaning',25),
