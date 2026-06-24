@@ -5,6 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Housio — Trusted Local Pros in Bend &amp; Central Oregon</title>
 <meta name="description" content="Hire skilled, background-checked local pros for cleaning, repairs, snow removal, defensible space and more. Compare quotes and book with confidence across Bend and Central Oregon.">
+<link rel="canonical" href="https://housioapp.com/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Housio",
+  "url": "https://housioapp.com/",
+  "areaServed": ["Bend OR", "Redmond OR", "Sisters OR", "Sunriver OR", "La Pine OR"],
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://housioapp.com/?service={search_term_string}",
+    "query-input": "required name=search_term_string"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Housio",
+    "url": "https://housioapp.com/"
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -356,6 +376,15 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
 .modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--gray-mid)}
 .social-btn{width:100%;border:1.5px solid var(--gray-mid);background:#fff;padding:12px;border-radius:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:.92rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;color:var(--ink)}
 .social-btn:hover{background:var(--gray-light)}
+.hp-field{position:absolute!important;left:-10000px!important;top:auto!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0!important}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:16px 0 20px}
+.admin-card{background:var(--gray-light);border:1px solid var(--gray-mid);border-radius:14px;padding:14px}
+.admin-card strong{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.35rem;color:var(--ink)}
+.admin-card span{font-size:.78rem;color:var(--gray);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.admin-section-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;color:var(--ink);margin:18px 0 10px}
+.admin-event{border-bottom:1px solid var(--gray-mid);padding:10px 0;font-size:.84rem;color:var(--gray)}
+.admin-event:last-child{border-bottom:none}
+.admin-event strong{color:var(--ink);font-weight:800}
 /* post-project steps */
 .steps-dots{display:flex;gap:8px;margin-bottom:22px}
 .step-dot{flex:1;height:5px;border-radius:10px;background:var(--gray-mid);transition:background .3s}
@@ -822,22 +851,21 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
       <div class="footer-col">
         <h5>Company</h5>
         <ul>
-          <li><a href="#">About Us</a></li>
-          <li><a href="#pros" onclick="event.preventDefault();joinAsPro()">For Pros</a></li>
+          <li><a href="about.html">About Housio</a></li>
+          <li><a href="for-local-pros.html">For Pros</a></li>
           <li><a href="bend-local-pros.html">Local Directory</a></li>
-          <li><a href="#how">How It Works</a></li>
-          <li><a href="#">Careers</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="how-it-works.html">How It Works</a></li>
+          <li><a href="contact.html">Contact</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h5>Support</h5>
         <ul>
-          <li><a href="#">Help Center</a></li>
-          <li><a href="#">Hero Guarantee</a></li>
-          <li><a href="#">Trust &amp; Safety</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Service</a></li>
+          <li><a href="how-it-works.html">Help Center</a></li>
+          <li><a href="safety-payments.html">Hero Guarantee</a></li>
+          <li><a href="safety-payments.html">Trust &amp; Safety</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
         </ul>
       </div>
     </div>
@@ -864,6 +892,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
     <div class="modal-divider">or</div>
     <div class="field"><label>Email</label><input id="liEmail" type="email" placeholder="you@email.com"></div>
     <div class="field"><label>Password</label><input id="liPass" type="password" placeholder="••••••••"></div>
+    <div class="hp-field" aria-hidden="true"><label>Website</label><input id="liWebsite" tabindex="-1" autocomplete="off"></div>
     <button class="btn-full" onclick="doLogin()">Log in</button>
     <div class="modal-alt">New to Housio? <a onclick="closeModal('loginModal');setSignupRole('homeowner');openModal('signupModal')">Create an account</a></div>
   </div>
@@ -887,6 +916,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
     <div class="field"><label>Full name</label><input id="suName" placeholder="Jane Smith"></div>
     <div class="field"><label>Email</label><input id="suEmail" type="email" placeholder="you@email.com"></div>
     <div class="field"><label>Password</label><input id="suPass" type="password" placeholder="Create a password"></div>
+    <div class="hp-field" aria-hidden="true"><label>Company website</label><input id="suCompany" tabindex="-1" autocomplete="off"></div>
     <button class="btn-full" id="signupBtn" onclick="doSignup()">Create Account</button>
     <div class="modal-alt">Already have an account? <a onclick="closeModal('signupModal');openModal('loginModal')">Log in</a></div>
   </div>
@@ -1053,6 +1083,90 @@ const esc = s => (s ?? '').toString().replace(/[&<>"]/g, m => ({ '&': '&amp;', '
 // status → pill class
 const PILL = { sent: 'pill-blue', viewed: 'pill-amber', replied: 'pill-green', won: 'pill-green', lost: 'pill-gray', refunded: 'pill-gray', open: 'pill-blue', matching: 'pill-amber', quoted: 'pill-blue', booked: 'pill-green', completed: 'pill-green', cancelled: 'pill-gray' };
 const pill = s => `<span class="pill ${PILL[s] || 'pill-gray'}">${esc(s)}</span>`;
+const RATE_LIMITS = {
+  signup: { limit: 4, windowMs: 10 * 60 * 1000 },
+  login: { limit: 8, windowMs: 10 * 60 * 1000 },
+  project: { limit: 4, windowMs: 10 * 60 * 1000 },
+  onboarding: { limit: 5, windowMs: 10 * 60 * 1000 }
+};
+
+function isAdmin() {
+  return currentProfile?.role === 'admin';
+}
+
+function sessionId() {
+  const key = 'housio_session_id';
+  let id = localStorage.getItem(key);
+  if (!id) {
+    id = window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(key, id);
+  }
+  return id;
+}
+
+function trafficSource() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('utm_source')) return params.get('utm_source');
+  if (params.get('utm')) return params.get('utm');
+  try { return document.referrer ? new URL(document.referrer).hostname : null; }
+  catch (e) { return null; }
+}
+
+function safeMeta(metadata = {}) {
+  return JSON.parse(JSON.stringify(metadata, (key, value) => {
+    if (value === undefined) return null;
+    if (typeof value === 'string') return value.slice(0, 500);
+    return value;
+  }));
+}
+
+async function track(eventName, metadata = {}) {
+  if (!sb) return;
+  try {
+    await sb.from('site_events').insert({
+      event_name: eventName,
+      user_id: currentUser?.id || null,
+      path: location.pathname || '/',
+      referrer: document.referrer || null,
+      session_id: sessionId(),
+      source: trafficSource(),
+      metadata: safeMeta(metadata)
+    });
+  } catch (e) {}
+}
+
+function trackError(error, context = {}) {
+  const message = error?.message || String(error || 'Unknown error');
+  track('frontend_error', { message, context });
+}
+
+function hitRateLimit(action) {
+  const cfg = RATE_LIMITS[action];
+  if (!cfg) return false;
+  const key = `housio_rate_${action}`;
+  const now = Date.now();
+  let hits = [];
+  try { hits = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { hits = []; }
+  hits = hits.filter(t => now - t < cfg.windowMs);
+  if (hits.length >= cfg.limit) {
+    localStorage.setItem(key, JSON.stringify(hits));
+    track('rate_limit_blocked', { action });
+    toast('Too many tries. Please wait a few minutes and try again.');
+    return true;
+  }
+  hits.push(now);
+  localStorage.setItem(key, JSON.stringify(hits));
+  return false;
+}
+
+function honeypotFilled(id, form) {
+  if (!val(id)) return false;
+  track('spam_honeypot_triggered', { form });
+  return true;
+}
+
+window.addEventListener('error', e => trackError(e.error || e.message, { type: 'error', source: e.filename, line: e.lineno }));
+window.addEventListener('unhandledrejection', e => trackError(e.reason, { type: 'unhandledrejection' }));
 
 // ── UI helpers ────────────────────────────────────────────────
 const val = id => (document.getElementById(id)?.value || '').trim();
@@ -1061,7 +1175,7 @@ function toast(msg) {
   t.textContent = msg; t.classList.add('show');
   clearTimeout(window._tt); window._tt = setTimeout(() => t.classList.remove('show'), 2900);
 }
-function openModal(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow = 'hidden'; }
+function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; track('modal_open', { modal: id.replace('Modal', '') }); }
 function closeModal(id) { if (id === 'quoteModal') paymentSession = null; document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
 function closeAll()     { paymentSession = null; if (window._convoCleanup) window._convoCleanup(); document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open')); document.body.style.overflow = ''; }
 
@@ -1108,15 +1222,16 @@ function renderNav() {
   if (currentProfile) {
     const name = currentProfile.full_name || currentUser?.email || 'User';
     const initials = name.split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
-    el.innerHTML = `<a class="nav-login" id="dashLink">${currentProfile.role === 'pro' ? 'My Jobs' : 'My Projects'}</a>
+    const dashLabel = isAdmin() ? 'Admin' : (currentProfile.role === 'pro' ? 'My Jobs' : 'My Projects');
+    el.innerHTML = `<a class="nav-login" id="dashLink">${dashLabel}</a>
       <div class="nav-avatar" id="navAvatar" title="${name}">${initials}</div>`;
     document.getElementById('dashLink').onclick = openDashboard;
     document.getElementById('navAvatar').onclick = openDashboard;
   } else {
     el.innerHTML = `<a class="nav-login" id="loginLink">Log in</a>
       <a class="nav-cta" id="signupLink">Sign up</a>`;
-    document.getElementById('loginLink').onclick = () => openModal('loginModal');
-    document.getElementById('signupLink').onclick = () => { setSignupRole('homeowner'); openModal('signupModal'); };
+    document.getElementById('loginLink').onclick = () => { track('login_open'); openModal('loginModal'); };
+    document.getElementById('signupLink').onclick = () => { track('signup_open', { role: 'homeowner' }); setSignupRole('homeowner'); openModal('signupModal'); };
   }
 }
 
@@ -1141,6 +1256,7 @@ function setSignupRole(r) {
 
 // One tap from any "join as pro" CTA → pro signup flow.
 function joinAsPro(service, claimName, claimSlug) {
+  track('pro_join_intent', { service: service || null, hasClaim: Boolean(claimName || claimSlug) });
   if (service && SERVICES.includes(service)) ob.trades = [service];
   if (claimName) ob.claimName = claimName;
   if (claimSlug) ob.claimSlug = claimSlug;
@@ -1155,19 +1271,23 @@ function joinAsPro(service, claimName, claimSlug) {
 // ── Google OAuth ──────────────────────────────────────────────
 async function signInWithGoogle() {
   if (!sb) { toast('Add your Supabase keys at the top of the file to enable Google login.'); return; }
+  track('google_login_start');
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: `${location.origin}${location.pathname}` }
   });
-  if (error) toast(error.message || 'Could not start Google login.');
+  if (error) { track('google_login_error', { message: error.message }); toast(error.message || 'Could not start Google login.'); }
 }
 
 // ── Sign up ───────────────────────────────────────────────────
 async function doSignup() {
   if (!sb) { toast('Add your Supabase keys at the top of the file to enable live sign-up.'); return; }
+  if (honeypotFilled('suCompany', 'signup')) return;
+  if (hitRateLimit('signup')) return;
   const name = val('suName'), email = val('suEmail').toLowerCase(), pass = val('suPass');
   if (!name || !email || !pass) { toast('Please fill in all fields'); return; }
   if (!email.includes('@')) { toast('Enter a valid email'); return; }
+  track('signup_attempt', { role: signupRole });
 
   const btn = document.querySelector('#signupModal .btn-full');
   btn.textContent = 'Creating account…'; btn.disabled = true;
@@ -1177,18 +1297,20 @@ async function doSignup() {
     options: { data: { full_name: name, role: signupRole } }
   });
 
-  btn.textContent = 'Create Account'; btn.disabled = false;
+  btn.textContent = signupRole === 'pro' ? 'Create account & continue' : 'Create Account'; btn.disabled = false;
 
-  if (error) { toast(error.message); return; }
+  if (error) { track('signup_error', { role: signupRole, message: error.message }); toast(error.message); return; }
 
   if (data.user && !data.session) {
     // Email confirmation is ON in Supabase → user must click the link first
     // (Turn it off in Supabase → Auth → Email → "Enable email confirmations" to skip this step)
     closeAll();
+    track('signup_success', { role: signupRole, confirmationRequired: true });
     toast('Check your inbox to confirm your email, then log back in!');
   } else {
     // Auto-confirmed — user is immediately logged in
     closeAll();
+    track('signup_success', { role: signupRole, confirmationRequired: false });
     toast(`Welcome to Housio, ${name.split(' ')[0]}! 🎉`);
     if (signupRole === 'pro') setTimeout(openOnboarding, 400);
     else setTimeout(openDashboard, 700);
@@ -1198,8 +1320,11 @@ async function doSignup() {
 // ── Log in ────────────────────────────────────────────────────
 async function doLogin() {
   if (!sb) { toast('Add your Supabase keys at the top of the file to enable login.'); return; }
+  if (honeypotFilled('liWebsite', 'login')) return;
+  if (hitRateLimit('login')) return;
   const email = val('liEmail').toLowerCase(), pass = val('liPass');
   if (!email || !pass) { toast('Enter your email and password'); return; }
+  track('login_attempt');
 
   const btn = document.querySelector('#loginModal .btn-full');
   btn.textContent = 'Logging in…'; btn.disabled = true;
@@ -1208,8 +1333,9 @@ async function doLogin() {
 
   btn.textContent = 'Log in'; btn.disabled = false;
 
-  if (error) { toast(error.message); return; }
+  if (error) { track('login_error', { message: error.message }); toast(error.message); return; }
   closeAll();
+  track('login_success');
   const firstName = (data.user?.user_metadata?.full_name || email).split(' ')[0];
   toast(`Welcome back, ${firstName}!`);
   // onAuthStateChange fires → renderNav() called automatically
@@ -1227,6 +1353,7 @@ async function logout() {
 let pp = { step: 1, service: '', details: '', zip: '' };
 function openPostProject(preset) {
   pp = { step: 1, service: preset || '', details: '', zip: '' };
+  track('project_open', { preset: preset || null });
   renderPP(); openModal('ppModal');
 }
 
@@ -1238,8 +1365,8 @@ function renderPP() {
     body.innerHTML = dots + `<h3>What do you need done?</h3><p class="modal-sub">Pick a service to get matched with local pros.</p>
       <div class="service-pick">${SERVICES.map(s => `<div class="service-opt ${pp.service === s ? 'active' : ''}" data-s="${s}">${s}</div>`).join('')}</div>
       <div class="pp-actions"><span></span><button class="btn-full" style="width:auto;padding:13px 30px" id="ppNext">Continue →</button></div>`;
-    body.querySelectorAll('.service-opt').forEach(o => o.onclick = () => { pp.service = o.dataset.s; renderPP(); });
-    document.getElementById('ppNext').onclick = () => { if (!pp.service) { toast('Pick a service first'); return; } pp.step = 2; renderPP(); };
+    body.querySelectorAll('.service-opt').forEach(o => o.onclick = () => { pp.service = o.dataset.s; track('project_service_selected', { service: pp.service }); renderPP(); });
+    document.getElementById('ppNext').onclick = () => { if (!pp.service) { toast('Pick a service first'); return; } track('project_step_continue', { step: 1, service: pp.service }); pp.step = 2; renderPP(); };
 
   } else if (pp.step === 2) {
     body.innerHTML = dots + `<h3>Tell us the details</h3><p class="modal-sub"><strong>${pp.service}</strong> — the more we know, the better your matches.</p>
@@ -1250,6 +1377,7 @@ function renderPP() {
     document.getElementById('ppNext').onclick = () => {
       pp.details = val('ppDetails'); pp.zip = val('ppZip');
       if (!pp.zip) { toast('Add your ZIP so we can find nearby pros'); return; }
+      track('project_step_continue', { step: 2, service: pp.service, zip: pp.zip.slice(0, 5) });
       pp.step = 3; renderPP();
     };
 
@@ -1264,6 +1392,7 @@ function renderPP() {
         <div class="field"><label>Your name</label><input id="ppName" placeholder="Jane Smith"></div>
         <div class="field"><label>Email</label><input id="ppEmail" type="email" placeholder="you@email.com"></div>
         <div class="field"><label>Create a password</label><input id="ppPass" type="password" placeholder="••••••••"></div>
+        <div class="hp-field" aria-hidden="true"><label>Business name</label><input id="ppCompany" tabindex="-1" autocomplete="off"></div>
         <button class="btn-full" id="ppSubmit">Create Account &amp; Get Quotes</button>
         <button class="pp-back" id="ppBack" style="display:block;margin:14px auto 0">← Back</button>`;
     }
@@ -1274,6 +1403,9 @@ function renderPP() {
 
 async function submitProject() {
   if (!sb) { toast('Add your Supabase keys at the top of the file to start collecting real projects.'); return; }
+  if (!currentUser && honeypotFilled('ppCompany', 'project')) return;
+  if (hitRateLimit('project')) return;
+  track('project_submit_attempt', { service: pp.service, zip: pp.zip.slice(0, 5), loggedIn: Boolean(currentUser) });
   const btn = document.getElementById('ppSubmit');
   btn.textContent = 'Sending…'; btn.disabled = true;
 
@@ -1290,13 +1422,15 @@ async function submitProject() {
       email, password: pass,
       options: { data: { full_name: name, role: 'homeowner' } }
     });
-    if (error) { toast(error.message); btn.textContent = 'Create Account & Get Quotes'; btn.disabled = false; return; }
+    if (error) { track('project_inline_signup_error', { message: error.message }); toast(error.message); btn.textContent = 'Create Account & Get Quotes'; btn.disabled = false; return; }
     if (!data.session) {
       closeAll();
+      track('project_inline_signup_confirmation_required', { service: pp.service });
       toast('Almost there! Check your inbox to confirm your email, then post your project.');
       return;
     }
     userId = data.user.id;
+    track('project_inline_signup_success', { service: pp.service });
     renderNav();
   }
 
@@ -1313,6 +1447,7 @@ async function submitProject() {
 
   if (error) {
     toast('Could not submit project — please try again.');
+    track('project_submit_error', { service: pp.service, message: error.message });
     console.error('projects insert error:', error);
     btn.textContent = 'Get My Free Quotes'; btn.disabled = false; return;
   }
@@ -1328,6 +1463,11 @@ async function submitProject() {
   }
 
   const noMatches = matchedCount === 0;
+  track(noMatches ? 'project_submit_no_match' : 'project_submit_success', {
+    service: pp.service,
+    zip: pp.zip.slice(0, 5),
+    matchedCount
+  });
   document.getElementById('ppBody').innerHTML = `<div style="text-align:center">
     <div class="success-check">${noMatches ? '📍' : '✅'}</div>
     <h3>${noMatches ? "You're on our Bend request list" : "You're all set!"}</h3>
@@ -1346,6 +1486,7 @@ let ob = { trades: [], founding: true, showAllTrades: false, phone: '', zip: '97
 
 function openOnboarding() {
   if (!currentUser) { joinAsPro(); return; }
+  track('pro_onboarding_open', { hasClaim: Boolean(ob.claimName || ob.claimSlug) });
   ob = {
     trades: ob.trades || [],
     founding: true,
@@ -1402,10 +1543,13 @@ function renderOnboard() {
 }
 
 function showObSuccess() {
+  const reviewMode = Boolean(ob.claimName || ob.claimSlug);
   document.getElementById('obBody').innerHTML = `
     <div class="success-check">🎉</div>
-    <h3>You're live!</h3>
-    <p class="modal-sub" style="margin-bottom:22px">We'll match you when homeowners near <strong>${esc(ob.zip)}</strong> post jobs in your categories. Set up payouts now or wait until your first booking — either way, you're in.</p>
+    <h3>${reviewMode ? 'Claim submitted' : "You're live!"}</h3>
+    <p class="modal-sub" style="margin-bottom:22px">${reviewMode
+      ? `Housio will review your claim for <strong>${esc(ob.claimName || 'this listing')}</strong>. Once approved, it can appear as a verified local pro profile.`
+      : `We'll match you when homeowners near <strong>${esc(ob.zip)}</strong> post jobs in your categories. Set up payouts now or wait until your first booking — either way, you're in.`}</p>
     <button class="btn-full" id="obDone">View my jobs</button>
     <div style="text-align:center;margin-top:14px">
       <button type="button" class="btn-sm" id="obPayout">Set up payouts (optional)</button>
@@ -1416,6 +1560,7 @@ function showObSuccess() {
 
 async function submitOnboarding() {
   if (!sb) { toast('Add your Supabase keys to enable pro onboarding.'); return; }
+  if (hitRateLimit('onboarding')) return;
   ob.phone = val('obPhone');
   ob.zip = val('obZip').replace(/\D/g, '').slice(0, 5);
   if (!ob.phone) { toast('Add your mobile number — homeowners need to reach you'); return; }
@@ -1430,6 +1575,7 @@ async function submitOnboarding() {
   const bizName = ob.claimName || currentProfile?.full_name || currentUser?.email?.split('@')[0] || 'Housio Pro';
   const now = new Date().toISOString();
   const hasClaim = Boolean(ob.claimName || ob.claimSlug);
+  track('pro_onboarding_submit', { tradeCount: ob.trades.length, zip: ob.zip, hasClaim });
   const proPayload = {
     profile_id: currentUser.id,
     business_name: bizName,
@@ -1438,8 +1584,8 @@ async function submitOnboarding() {
     radius_miles: 25,
     founding_pro: true,
     plan: 'founding',
-    verified: true,
-    verification: 'verified',
+    verified: !hasClaim,
+    verification: hasClaim ? 'pending' : 'verified',
     onboarded_at: now
   };
 
@@ -1460,6 +1606,7 @@ async function submitOnboarding() {
 
   if (error || !pro) {
     console.error('onboarding error:', error);
+    track('pro_onboarding_error', { message: error?.message || 'unknown', hasClaim });
     toast('Could not save your profile — please try again.');
     btn.textContent = 'Start getting jobs →'; btn.disabled = false;
     return;
@@ -1472,6 +1619,7 @@ async function submitOnboarding() {
   }
 
   toast('Welcome, Founding Pro — you\'re in! 🔒');
+  track('pro_onboarding_success', { proId: pro.id, tradeCount: tradeIds.length, hasClaim, verification: proPayload.verification });
   showObSuccess();
 }
 
@@ -1502,10 +1650,97 @@ async function openDashboard() {
   const body = document.getElementById('dashBody');
   const name = (currentProfile?.full_name || currentUser.email).split(' ')[0];
   body.innerHTML = `<h3>Hi, ${esc(name)} 👋</h3><p class="modal-sub" style="color:var(--gray)">Loading…</p>`;
+  track('dashboard_open', { role: currentProfile?.role || 'unknown' });
+  if (isAdmin()) { renderAdminDash(name); return; }
   currentProfile?.role === 'pro' ? renderProDash(name) : renderHomeownerDash(name);
 }
 
 // ── Homeowner dashboard ───────────────────────────────────────
+async function renderAdminDash(name) {
+  const body = document.getElementById('dashBody');
+  const [claimsRes, eventsRes, projectsRes, prosRes] = await Promise.all([
+    sb.from('pros')
+      .select('id,business_name,phone,zip,verified,verification,directory_claim_name,directory_claim_slug,directory_claimed_at,onboarded_at,created_at,profiles(full_name,email)')
+      .or('directory_claim_slug.not.is.null,directory_claim_name.not.is.null,verification.eq.pending')
+      .order('created_at', { ascending: false })
+      .limit(40),
+    sb.from('site_events').select('id,event_name,path,source,metadata,created_at').order('created_at', { ascending: false }).limit(25),
+    sb.from('projects').select('id', { count: 'exact', head: true }),
+    sb.from('pros').select('id', { count: 'exact', head: true })
+  ]);
+
+  const claims = claimsRes.data || [];
+  const events = eventsRes.data || [];
+  const pendingClaims = claims.filter(c => c.verification === 'pending').length;
+  const schemaHint = claimsRes.error || eventsRes.error
+    ? `<div class="dash-empty">Admin data needs the latest Supabase schema. Run <strong>backend/schema.sql</strong>, then refresh. ${esc(claimsRes.error?.message || eventsRes.error?.message || '')}</div>`
+    : '';
+
+  const claimsHtml = claims.length
+    ? claims.map(c => {
+        const owner = c.profiles?.full_name || c.profiles?.email || 'Unknown owner';
+        const claimName = c.directory_claim_name || c.business_name || c.directory_claim_slug || 'Directory claim';
+        const status = c.verification || (c.verified ? 'verified' : 'pending');
+        return `<div class="project-item">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+            <div>
+              <h4>${esc(claimName)}</h4>
+              <div class="pi-meta">${esc(owner)} · ZIP ${esc(c.zip || 'n/a')} · ${esc(c.phone || 'no phone yet')}</div>
+              <div class="pi-meta">Claim: ${esc(c.directory_claim_slug || 'manual')} · ${new Date(c.directory_claimed_at || c.created_at).toLocaleDateString()}</div>
+            </div>
+            ${pill(status)}
+          </div>
+          <div class="card-actions">
+            <button class="btn-sm primary" data-claim="${c.id}" data-status="approved">Approve</button>
+            <button class="btn-sm ghost" data-claim="${c.id}" data-status="rejected">Reject</button>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="dash-empty">No directory claims waiting right now.</div>';
+
+  const eventsHtml = events.length
+    ? events.map(e => {
+        const meta = e.metadata || {};
+        const detail = meta.service || meta.role || meta.action || meta.message || e.source || e.path || '';
+        return `<div class="admin-event"><strong>${esc(e.event_name)}</strong> ${detail ? `· ${esc(detail)}` : ''}<br><span>${new Date(e.created_at).toLocaleString()} · ${esc(e.path || '/')}</span></div>`;
+      }).join('')
+    : '<div class="dash-empty">No site events yet.</div>';
+
+  body.innerHTML = `<h3>Housio Admin</h3>
+    <p class="modal-sub">Review claimed Bend business listings and watch signup/conversion events.</p>
+    <div class="admin-grid">
+      <div class="admin-card"><strong>${pendingClaims}</strong><span>Pending claims</span></div>
+      <div class="admin-card"><strong>${projectsRes.count ?? 0}</strong><span>Total projects</span></div>
+      <div class="admin-card"><strong>${prosRes.count ?? 0}</strong><span>Total pros</span></div>
+    </div>
+    ${schemaHint}
+    <div class="admin-section-title">Directory claims</div>
+    ${claimsHtml}
+    <div class="admin-section-title">Recent site events</div>
+    ${eventsHtml}`;
+
+  body.querySelectorAll('[data-claim]').forEach(btn => {
+    btn.onclick = () => reviewDirectoryClaim(btn.dataset.claim, btn.dataset.status);
+  });
+}
+
+async function reviewDirectoryClaim(proId, status) {
+  if (!isAdmin()) return;
+  const approved = status === 'approved';
+  const { error } = await sb.from('pros').update({
+    verified: approved,
+    verification: approved ? 'verified' : 'rejected'
+  }).eq('id', proId);
+  if (error) {
+    track('admin_claim_review_error', { status, message: error.message });
+    toast(error.message || 'Could not update claim.');
+    return;
+  }
+  track('admin_claim_review', { proId, status });
+  toast(approved ? 'Claim approved.' : 'Claim rejected.');
+  openDashboard();
+}
+
 async function renderHomeownerDash(name) {
   const body = document.getElementById('dashBody');
   const { data: projects } = await sb.from('projects')
@@ -2002,6 +2237,7 @@ function openReview(opts) {
 function heroSearch() {
   const q = document.getElementById('searchInput').value.trim();
   const match = SERVICES.find(s => q && (s.toLowerCase().includes(q.toLowerCase()) || q.toLowerCase().includes(s.toLowerCase().split(' ')[0])));
+  track('hero_search', { hasQuery: Boolean(q), matchedService: match || null });
   openPostProject(match || '');
   if (q && !match) pp.details = q;
 }
@@ -2015,8 +2251,10 @@ function handleServiceIntent() {
   const normalized = requested ? requested.trim().toLowerCase() : '';
   const match = SERVICES.find(s => s.toLowerCase() === normalized);
   if (join === 'pro') {
+    track('service_intent_join_pro', { service: match || requested || null, hasClaim: Boolean(claimSlug || claimName) });
     setTimeout(() => joinAsPro(match || '', claimName, claimSlug), 350);
   } else if (match) {
+    track('service_intent_project', { service: match });
     setTimeout(() => openPostProject(match), 350);
   } else {
     return;
@@ -2036,17 +2274,19 @@ document.querySelectorAll('.cat-card').forEach(c => {
   c.style.cursor = 'pointer';
   c.onclick = () => {
     const name = c.querySelector('.cat-name').textContent.trim();
+    track('category_click', { service: SERVICES.includes(name) ? name : 'more' });
     openPostProject(SERVICES.includes(name) ? name : '');
   };
 });
 document.querySelectorAll('.project-card').forEach(c => {
-  c.onclick = () => openPostProject('');
+  c.onclick = () => { track('popular_project_click'); openPostProject(''); };
 });
 
 document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) { o.id === 'convoModal' ? closeConvo() : closeModal(o.id); } }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
 
 renderNav(); // show logged-out state immediately; onAuthStateChange updates it if there's a session
+track('page_view', { query: Boolean(location.search), hash: location.hash || null });
 handlePaymentReturn();
 handleServiceIntent();
 

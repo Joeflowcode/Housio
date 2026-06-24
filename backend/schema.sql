@@ -118,6 +118,20 @@ create table if not exists stripe_events (
   processed_at timestamptz default now()
 );
 
+-- First-party product analytics and frontend error logging. Keep this
+-- PII-light; store event facts, not passwords, project details, or message bodies.
+create table if not exists site_events (
+  id          uuid primary key default uuid_generate_v4(),
+  event_name  text not null,
+  user_id     uuid references profiles(id) on delete set null,
+  path        text,
+  referrer    text,
+  session_id  text,
+  source      text,
+  metadata    jsonb not null default '{}'::jsonb,
+  created_at  timestamptz default now()
+);
+
 -- ════════════════════════════════════════════════════════════════
 --  INDEXES — the #1 thing that lets you scale.
 --  Postgres does NOT auto-index foreign keys. Index everything you
@@ -133,10 +147,15 @@ create index if not exists idx_projects_trade    on projects(trade_id);
 create index if not exists idx_projects_status   on projects(status);
 create index if not exists idx_projects_geo      on projects using gist(geo);
 create index if not exists idx_projects_created  on projects(created_at desc);
+create index if not exists idx_projects_trade_status_created on projects(trade_id, status, created_at desc);
 create index if not exists idx_leads_pro_status  on leads(pro_id, status);
 create index if not exists idx_leads_project     on leads(project_id);
+create index if not exists idx_leads_project_status on leads(project_id, status);
 create index if not exists idx_reviews_pro       on reviews(pro_id);
 create index if not exists idx_subs_pro          on subscriptions(pro_id);
+create index if not exists idx_site_events_name_created on site_events(event_name, created_at desc);
+create index if not exists idx_site_events_user_created on site_events(user_id, created_at desc);
+create index if not exists idx_site_events_path_created on site_events(path, created_at desc);
 
 -- ════════════════════════════════════════════════════════════════
 --  ROW LEVEL SECURITY — each user only touches their own data.
@@ -150,43 +169,106 @@ alter table projects      enable row level security;
 alter table leads         enable row level security;
 alter table reviews       enable row level security;
 alter table subscriptions enable row level security;
+alter table site_events   enable row level security;
+
+-- Security-definer helper avoids recursive RLS checks when admin policies
+-- need to inspect the signed-in user's profile row.
+create or replace function is_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from profiles
+    where id = (select auth.uid())
+      and role = 'admin'
+  );
+$$;
 
 -- profiles: read/update/insert your own row
-create policy "own profile read"   on profiles for select using ( (select auth.uid()) = id );
-create policy "own profile update" on profiles for update using ( (select auth.uid()) = id );
-create policy "own profile insert" on profiles for insert with check ( (select auth.uid()) = id );
+do $$ begin
+  create policy "own profile read" on profiles for select using ( (select auth.uid()) = id );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "own profile update" on profiles for update using ( (select auth.uid()) = id );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "own profile insert" on profiles for insert with check ( (select auth.uid()) = id );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "profiles admin read" on profiles for select using ( is_admin() );
+exception when duplicate_object then null; end $$;
 
 -- pros + their trades: PUBLIC read (marketplace listings); owner writes
-create policy "pros public read" on pros for select using ( true );
-create policy "pros owner write" on pros for all
-  using ( profile_id = (select auth.uid()) )
-  with check ( profile_id = (select auth.uid()) );
-create policy "pro_trades read"  on pro_trades for select using ( true );
-create policy "pro_trades owner" on pro_trades for all using (
-  exists (select 1 from pros p where p.id = pro_id and p.profile_id = (select auth.uid())) );
+do $$ begin
+  create policy "pros public read" on pros for select using ( true );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "pros owner write" on pros for all
+    using ( profile_id = (select auth.uid()) )
+    with check ( profile_id = (select auth.uid()) );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "pros admin manage" on pros for all
+    using ( is_admin() )
+    with check ( is_admin() );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "pro_trades read" on pro_trades for select using ( true );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "pro_trades owner" on pro_trades for all using (
+    exists (select 1 from pros p where p.id = pro_id and p.profile_id = (select auth.uid())) );
+exception when duplicate_object then null; end $$;
 
 -- projects: homeowner owns; matched pros can read theirs
-create policy "projects homeowner" on projects for all
-  using ( homeowner_id = (select auth.uid()) )
-  with check ( homeowner_id = (select auth.uid()) );
-create policy "projects matched pro read" on projects for select using (
-  exists (select 1 from leads l join pros p on p.id = l.pro_id
-          where l.project_id = projects.id and p.profile_id = (select auth.uid())) );
+do $$ begin
+  create policy "projects homeowner" on projects for all
+    using ( homeowner_id = (select auth.uid()) )
+    with check ( homeowner_id = (select auth.uid()) );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "projects matched pro read" on projects for select using (
+    exists (select 1 from leads l join pros p on p.id = l.pro_id
+            where l.project_id = projects.id and p.profile_id = (select auth.uid())) );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "projects admin read" on projects for select using ( is_admin() );
+exception when duplicate_object then null; end $$;
 
 -- leads: pro sees own; homeowner sees leads on their projects
-create policy "leads pro read" on leads for select using (
-  exists (select 1 from pros p where p.id = pro_id and p.profile_id = (select auth.uid())) );
-create policy "leads homeowner read" on leads for select using (
-  exists (select 1 from projects pr where pr.id = project_id and pr.homeowner_id = (select auth.uid())) );
+do $$ begin
+  create policy "leads pro read" on leads for select using (
+    exists (select 1 from pros p where p.id = pro_id and p.profile_id = (select auth.uid())) );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "leads homeowner read" on leads for select using (
+    exists (select 1 from projects pr where pr.id = project_id and pr.homeowner_id = (select auth.uid())) );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "leads admin read" on leads for select using ( is_admin() );
+exception when duplicate_object then null; end $$;
 
 -- reviews: public read; homeowner writes their own
-create policy "reviews public read"    on reviews for select using ( true );
-create policy "reviews homeowner write" on reviews for insert with check ( homeowner_id = (select auth.uid()) );
+do $$ begin
+  create policy "reviews public read" on reviews for select using ( true );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "reviews homeowner write" on reviews for insert with check ( homeowner_id = (select auth.uid()) );
+exception when duplicate_object then null; end $$;
 
 -- optional paid-tier subscriptions: pro reads own. NO write policy on
 -- purpose → only trusted server code can write here.
-create policy "subs pro read" on subscriptions for select using (
-  exists (select 1 from pros p where p.id = pro_id and p.profile_id = (select auth.uid())) );
+do $$ begin
+  create policy "subs pro read" on subscriptions for select using (
+    exists (select 1 from pros p where p.id = pro_id and p.profile_id = (select auth.uid())) );
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "site_events visitor insert" on site_events for insert with check (
+    user_id is null or user_id = (select auth.uid())
+  );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "site_events admin read" on site_events for select using ( is_admin() );
+exception when duplicate_object then null; end $$;
 
 -- ════════════════════════════════════════════════════════════════
 --  Auto-create a profile row whenever someone signs up
@@ -309,6 +391,11 @@ alter table pros add column if not exists onboarded_at       timestamptz;
 alter table pros add column if not exists directory_claim_name text;
 alter table pros add column if not exists directory_claim_slug text;
 alter table pros add column if not exists directory_claimed_at timestamptz;
+
+create index if not exists idx_pros_directory_claim_slug on pros(directory_claim_slug) where directory_claim_slug is not null;
+create index if not exists idx_pros_directory_claimed_at on pros(directory_claimed_at desc) where directory_claimed_at is not null;
+create index if not exists idx_pros_onboarded_at on pros(onboarded_at desc);
+create index if not exists idx_pros_verification_created on pros(verification, created_at desc);
 
 -- One pro profile per user (lets onboarding upsert on profile_id).
 do $$ begin
@@ -444,6 +531,9 @@ do $$ begin
   create policy "quotes homeowner update" on quotes for update using (
     exists (select 1 from projects pr where pr.id = project_id and pr.homeowner_id = (select auth.uid())) );
 exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "quotes admin read" on quotes for select using ( is_admin() );
+exception when duplicate_object then null; end $$;
 
 -- payments: each party reads its own. Writes are service-role only
 -- (the Stripe Connect function / webhook) — no insert/update policy.
@@ -451,6 +541,9 @@ do $$ begin
   create policy "payments party read" on payments for select using (
     homeowner_id = (select auth.uid())
     or exists (select 1 from pros p where p.id = pro_id and p.profile_id = (select auth.uid())) );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "payments admin read" on payments for select using ( is_admin() );
 exception when duplicate_object then null; end $$;
 
 -- ════════════════════════════════════════════════════════════════
