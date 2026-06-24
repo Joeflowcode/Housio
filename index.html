@@ -477,6 +477,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
         <li><a href="#categories">Browse Services</a></li>
         <li><a href="#how">How It Works</a></li>
         <li><a href="#pros" onclick="event.preventDefault();joinAsPro()">For Pros</a></li>
+        <li><a href="bend-local-pros.html">Local Directory</a></li>
         <li><a href="#projects">Popular Projects</a></li>
         <li><a href="savings.html">See Your Savings</a></li>
       </ul>
@@ -821,6 +822,7 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
         <ul>
           <li><a href="#">About Us</a></li>
           <li><a href="#pros" onclick="event.preventDefault();joinAsPro()">For Pros</a></li>
+          <li><a href="bend-local-pros.html">Local Directory</a></li>
           <li><a href="#how">How It Works</a></li>
           <li><a href="#">Careers</a></li>
           <li><a href="#">Contact</a></li>
@@ -1136,7 +1138,12 @@ function setSignupRole(r) {
 }
 
 // One tap from any "join as pro" CTA → pro signup flow.
-function joinAsPro() {
+function joinAsPro(service) {
+  if (service && SERVICES.includes(service)) ob.trades = [service];
+  if (currentUser) {
+    openOnboarding();
+    return;
+  }
   setSignupRole('pro');
   openModal('signupModal');
 }
@@ -1974,12 +1981,19 @@ function heroSearch() {
 function handleServiceIntent() {
   const params = new URLSearchParams(location.search);
   const requested = params.get('service');
-  if (!requested) return;
-  const normalized = requested.trim().toLowerCase();
+  const join = params.get('join');
+  if (!requested && join !== 'pro') return;
+  const normalized = requested ? requested.trim().toLowerCase() : '';
   const match = SERVICES.find(s => s.toLowerCase() === normalized);
-  if (!match) return;
-  setTimeout(() => openPostProject(match), 350);
+  if (join === 'pro') {
+    setTimeout(() => joinAsPro(match || ''), 350);
+  } else if (match) {
+    setTimeout(() => openPostProject(match), 350);
+  } else {
+    return;
+  }
   params.delete('service');
+  params.delete('join');
   params.delete('utm');
   const clean = `${location.pathname}${params.toString() ? '?' + params.toString() : ''}${location.hash}`;
   history.replaceState(null, '', clean);
