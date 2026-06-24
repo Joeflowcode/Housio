@@ -806,13 +806,14 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
       <div class="footer-col">
         <h5>Services</h5>
         <ul>
-          <li><a href="#">House Cleaning</a></li>
-          <li><a href="#">Carpet Cleaning</a></li>
-          <li><a href="#">Personal Training</a></li>
-          <li><a href="#">Plumbing</a></li>
-          <li><a href="#">HVAC</a></li>
-          <li><a href="#">Roofing</a></li>
-          <li><a href="#">Handyman</a></li>
+          <li><a href="bend-house-cleaning.html">House Cleaning</a></li>
+          <li><a href="bend-carpet-cleaning.html">Carpet Cleaning</a></li>
+          <li><a href="bend-personal-training.html">Personal Training</a></li>
+          <li><a href="bend-handyman.html">Handyman</a></li>
+          <li><a href="bend-junk-removal.html">Junk Removal</a></li>
+          <li><a href="bend-snow-removal.html">Snow Removal</a></li>
+          <li><a href="bend-vacation-rental-cleaning.html">Vacation Rental Cleaning</a></li>
+          <li><a href="bend-landscaping.html">Landscaping</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1291,13 +1292,13 @@ async function submitProject() {
   // Geocode the ZIP first so the matching trigger has a point to search.
   await geocodeZip(pp.zip);
 
-  const { error } = await sb.from('projects').insert({
+  const { data: project, error } = await sb.from('projects').insert({
     homeowner_id: userId,
     trade_id: tradeIdFor(pp.service),
     details: pp.details,
     zip: pp.zip,
     status: 'matching'
-  });
+  }).select('id').single();
 
   if (error) {
     toast('Could not submit project — please try again.');
@@ -1305,10 +1306,23 @@ async function submitProject() {
     btn.textContent = 'Get My Free Quotes'; btn.disabled = false; return;
   }
 
+  let matchedCount = null;
+  if (project?.id) {
+    await new Promise(resolve => setTimeout(resolve, 700));
+    const { count, error: leadsError } = await sb
+      .from('leads')
+      .select('id', { count: 'exact', head: true })
+      .eq('project_id', project.id);
+    if (!leadsError) matchedCount = count || 0;
+  }
+
+  const noMatches = matchedCount === 0;
   document.getElementById('ppBody').innerHTML = `<div style="text-align:center">
-    <div class="success-check">✅</div>
-    <h3>You're all set!</h3>
-    <p class="modal-sub" style="margin-bottom:22px">We're matching you with verified <strong>${pp.service}</strong> pros near ${pp.zip}. Your first quotes usually arrive within an hour.</p>
+    <div class="success-check">${noMatches ? '📍' : '✅'}</div>
+    <h3>${noMatches ? "You're on our Bend request list" : "You're all set!"}</h3>
+    <p class="modal-sub" style="margin-bottom:22px">${noMatches
+      ? `We do not have an active <strong>${pp.service}</strong> pro close enough to ${pp.zip} yet. Your request is saved, and we will prioritize recruiting a verified local pro for it.`
+      : `We matched your request with <strong>${matchedCount ?? 'up to 4'}</strong> verified ${pp.service} pro${matchedCount === 1 ? '' : 's'} near ${pp.zip}. Your first quotes usually arrive within an hour.`}</p>
     <button class="btn-full" id="ppDone">View My Projects</button></div>`;
   document.getElementById('ppDone').onclick = () => { closeAll(); openDashboard(); };
 }
@@ -1727,6 +1741,7 @@ async function openProjectDetail(pid) {
 
   const canReview = ['booked', 'completed'].includes(p.status);
   const leadByPro = {}; (leads || []).forEach(l => leadByPro[l.pro_id] = l.id);
+  const hasMatchedPros = (leads || []).length > 0;
 
   const quotesHtml = quotes?.length
     ? `<h4 style="margin:18px 0 8px">Compare quotes (${quotes.length})</h4>` + quotes.map(q => `
@@ -1750,7 +1765,9 @@ async function openProjectDetail(pid) {
             ${canReview ? `<button class="btn-sm" data-review="${q.pro_id}" data-pid="${pid}" data-name="${esc(q.pros?.business_name || 'Pro')}">⭐ Review</button>` : ''}
           </div>
         </div>`).join('')
-    : '<div class="dash-empty" style="margin-top:16px">No quotes yet. Matched pros will send quotes soon — message them to get things moving.</div>';
+    : (hasMatchedPros
+        ? '<div class="dash-empty" style="margin-top:16px">No quotes yet. Matched pros will send quotes soon — message them to get things moving.</div>'
+        : '<div class="dash-empty" style="margin-top:16px">No matched pros yet. Your request is saved, and Housio is prioritizing local pro recruitment for this service area.</div>');
 
   const prosHtml = leads?.length
     ? `<h4 style="margin:18px 0 8px">Matched pros (${leads.length})</h4>` + leads.map(l => `
@@ -1954,6 +1971,19 @@ function heroSearch() {
   openPostProject(match || '');
   if (q && !match) pp.details = q;
 }
+function handleServiceIntent() {
+  const params = new URLSearchParams(location.search);
+  const requested = params.get('service');
+  if (!requested) return;
+  const normalized = requested.trim().toLowerCase();
+  const match = SERVICES.find(s => s.toLowerCase() === normalized);
+  if (!match) return;
+  setTimeout(() => openPostProject(match), 350);
+  params.delete('service');
+  params.delete('utm');
+  const clean = `${location.pathname}${params.toString() ? '?' + params.toString() : ''}${location.hash}`;
+  history.replaceState(null, '', clean);
+}
 document.querySelector('.search-btn').addEventListener('click', heroSearch);
 document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') heroSearch(); });
 
@@ -1973,6 +2003,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); 
 
 renderNav(); // show logged-out state immediately; onAuthStateChange updates it if there's a session
 handlePaymentReturn();
+handleServiceIntent();
 
 // ── Scroll reveal ─────────────────────────────────────────────
 const obs = new IntersectionObserver(entries => {
