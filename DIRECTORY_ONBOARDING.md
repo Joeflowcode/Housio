@@ -20,7 +20,9 @@ Example:
   phone: '(541) 555-0100',
   status: 'unclaimed',
   claimSlug: 'business-name',
-  notes: 'Recurring and move-out cleaning.'
+  notes: 'Recurring and move-out cleaning.',
+  sourceUrl: 'https://example.com',
+  sourceCheckedAt: '2026-06-24'
 }
 ```
 
