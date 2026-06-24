@@ -70,6 +70,7 @@ window.HOUSIO_DIRECTORY_LISTINGS = [
       website: 'https://example.com',
       phone: '(541) 555-0100',
       status: 'unclaimed',
+      claimSlug: 'business-name',
       notes: 'Recurring and move-out cleaning.'
     }
   */

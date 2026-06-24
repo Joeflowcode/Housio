@@ -306,6 +306,9 @@ alter table pros add column if not exists years_experience   int;
 alter table pros add column if not exists verification       verify_status not null default 'unverified';
 alter table pros add column if not exists reviews_count      int           not null default 0;
 alter table pros add column if not exists onboarded_at       timestamptz;
+alter table pros add column if not exists directory_claim_name text;
+alter table pros add column if not exists directory_claim_slug text;
+alter table pros add column if not exists directory_claimed_at timestamptz;
 
 -- One pro profile per user (lets onboarding upsert on profile_id).
 do $$ begin

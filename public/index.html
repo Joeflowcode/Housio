@@ -452,6 +452,8 @@ footer{background:#0a1722;color:#8ea0b2;padding:64px 0 28px}
 .trade-chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
 .trade-chip.popular{font-size:.88rem;padding:10px 16px}
 .ob-section{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.82rem;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px}
+.ob-claim{border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:8px;padding:12px 14px;margin:14px 0 18px;font-size:.88rem;line-height:1.45}
+.ob-claim strong{display:block;color:#172554;margin-bottom:3px}
 .ob-foot{font-size:.8rem;color:var(--gray);text-align:center;margin-top:14px;line-height:1.5}
 .ob-more{background:none;border:none;color:var(--blue);font-weight:600;font-size:.88rem;cursor:pointer;padding:4px 0;margin-bottom:8px}
 .check-row{display:flex;align-items:center;gap:10px;margin-bottom:15px;cursor:pointer}
@@ -1138,8 +1140,10 @@ function setSignupRole(r) {
 }
 
 // One tap from any "join as pro" CTA → pro signup flow.
-function joinAsPro(service) {
+function joinAsPro(service, claimName, claimSlug) {
   if (service && SERVICES.includes(service)) ob.trades = [service];
+  if (claimName) ob.claimName = claimName;
+  if (claimSlug) ob.claimSlug = claimSlug;
   if (currentUser) {
     openOnboarding();
     return;
@@ -1338,7 +1342,7 @@ async function submitProject() {
 //  PRO ONBOARDING — TaskRabbit-style: one screen, ~90 seconds.
 //  Name comes from signup; payout setup is deferred to first job.
 // ══════════════════════════════════════════════════════════════
-let ob = { trades: [], founding: true, showAllTrades: false, phone: '', zip: '97701' };
+let ob = { trades: [], founding: true, showAllTrades: false, phone: '', zip: '97701', claimName: '', claimSlug: '' };
 
 function openOnboarding() {
   if (!currentUser) { joinAsPro(); return; }
@@ -1348,6 +1352,8 @@ function openOnboarding() {
     showAllTrades: false,
     phone: ob.phone || '',
     zip: ob.zip || '97701',
+    claimName: ob.claimName || '',
+    claimSlug: ob.claimSlug || '',
   };
   renderOnboard();
   closeModal('dashModal');
@@ -1365,10 +1371,15 @@ function renderOnboard() {
   const chips = list.map(s =>
     `<div class="trade-chip popular ${ob.trades.includes(s) ? 'on' : ''}" data-s="${esc(s)}">${esc(s)}</div>`
   ).join('');
+  const claimTitle = ob.claimName || ob.claimSlug;
+  const claimNotice = claimTitle
+    ? `<div class="ob-claim"><strong>Claiming directory profile: ${esc(claimTitle)}</strong>Finish this profile and Housio can review it before attaching it to the local directory listing.</div>`
+    : '';
 
   body.innerHTML = `
     <h3>Hey ${esc(firstName)} — let's get you earning 👋</h3>
     <p class="modal-sub">Pick what you do and where you work. That's it — you can add photos, bio, and payouts later.</p>
+    ${claimNotice}
     <div class="field-row">
       <div class="field"><label>Mobile number</label><input id="obPhone" type="tel" inputmode="tel" placeholder="(541) 555-0123" value="${esc(ob.phone)}"></div>
       <div class="field"><label>Your ZIP code</label><input id="obZip" inputmode="numeric" placeholder="97701" value="${esc(ob.zip)}"></div>
@@ -1416,9 +1427,10 @@ async function submitOnboarding() {
 
   await geocodeZip(ob.zip);
 
-  const bizName = currentProfile?.full_name || currentUser?.email?.split('@')[0] || 'Housio Pro';
-
-  const { data: pro, error } = await sb.from('pros').upsert({
+  const bizName = ob.claimName || currentProfile?.full_name || currentUser?.email?.split('@')[0] || 'Housio Pro';
+  const now = new Date().toISOString();
+  const hasClaim = Boolean(ob.claimName || ob.claimSlug);
+  const proPayload = {
     profile_id: currentUser.id,
     business_name: bizName,
     phone: ob.phone,
@@ -1428,8 +1440,23 @@ async function submitOnboarding() {
     plan: 'founding',
     verified: true,
     verification: 'verified',
-    onboarded_at: new Date().toISOString()
-  }, { onConflict: 'profile_id' }).select().single();
+    onboarded_at: now
+  };
+
+  if (hasClaim) {
+    proPayload.directory_claim_name = ob.claimName || null;
+    proPayload.directory_claim_slug = ob.claimSlug || null;
+    proPayload.directory_claimed_at = now;
+  }
+
+  let { data: pro, error } = await sb.from('pros').upsert(proPayload, { onConflict: 'profile_id' }).select().single();
+
+  if (error && hasClaim && /directory_claim/i.test(String(error.message || error.details || ''))) {
+    delete proPayload.directory_claim_name;
+    delete proPayload.directory_claim_slug;
+    delete proPayload.directory_claimed_at;
+    ({ data: pro, error } = await sb.from('pros').upsert(proPayload, { onConflict: 'profile_id' }).select().single());
+  }
 
   if (error || !pro) {
     console.error('onboarding error:', error);
@@ -1982,11 +2009,13 @@ function handleServiceIntent() {
   const params = new URLSearchParams(location.search);
   const requested = params.get('service');
   const join = params.get('join');
+  const claimSlug = params.get('claim') || '';
+  const claimName = params.get('claim_name') || '';
   if (!requested && join !== 'pro') return;
   const normalized = requested ? requested.trim().toLowerCase() : '';
   const match = SERVICES.find(s => s.toLowerCase() === normalized);
   if (join === 'pro') {
-    setTimeout(() => joinAsPro(match || ''), 350);
+    setTimeout(() => joinAsPro(match || '', claimName, claimSlug), 350);
   } else if (match) {
     setTimeout(() => openPostProject(match), 350);
   } else {
@@ -1995,6 +2024,8 @@ function handleServiceIntent() {
   params.delete('service');
   params.delete('join');
   params.delete('utm');
+  params.delete('claim');
+  params.delete('claim_name');
   const clean = `${location.pathname}${params.toString() ? '?' + params.toString() : ''}${location.hash}`;
   history.replaceState(null, '', clean);
 }

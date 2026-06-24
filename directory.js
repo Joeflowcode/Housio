@@ -11,8 +11,22 @@
   const params = new URLSearchParams(location.search);
   let active = params.get('category') || 'all';
 
-  function joinUrl(service) {
-    return `index.html?join=pro&service=${encodeURIComponent(service)}&utm=directory`;
+  function slugify(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  function joinUrl(service, claimName, claimSlug) {
+    const urlParams = new URLSearchParams({ join: 'pro', utm: 'directory' });
+    if (service) urlParams.set('service', service);
+    if (claimName) {
+      urlParams.set('claim', claimSlug || slugify(claimName));
+      urlParams.set('claim_name', claimName);
+    }
+    return `index.html?${urlParams.toString()}`;
   }
 
   function categoryBySlug(slug) {
@@ -94,7 +108,7 @@
         <div class="card-actions">
           ${l.website ? `<a class="mini" href="${l.website}" target="_blank" rel="noopener">Website</a>` : ''}
           ${l.phone ? `<a class="mini" href="tel:${l.phone.replace(/[^0-9+]/g, '')}">Call</a>` : ''}
-          <a class="mini primary" href="${joinUrl(cat?.service || '')}">${l.status === 'claimed' ? 'Join Housio' : 'Claim profile'}</a>
+          <a class="mini primary" href="${joinUrl(cat?.service || '', l.name, l.claimSlug)}">${l.status === 'claimed' ? 'Join Housio' : 'Claim profile'}</a>
         </div>
       </article>`;
     }).join('');
