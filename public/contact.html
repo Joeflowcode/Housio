@@ -9,14 +9,72 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="local-service.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+.contact-form{display:grid;gap:14px}
+.contact-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.contact-field{display:grid;gap:7px}
+.contact-field label{font-weight:900;font-size:.82rem;color:var(--juniper)}
+.contact-field input,.contact-field select,.contact-field textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font:inherit;color:var(--ink);background:#fff;outline:none}
+.contact-field textarea{min-height:130px;resize:vertical}
+.contact-field input:focus,.contact-field select:focus,.contact-field textarea:focus{border-color:var(--river);box-shadow:0 0 0 3px rgba(22,134,168,.12)}
+.form-note{font-size:.9rem;color:var(--muted)}
+.form-status{font-weight:800;color:var(--juniper)}
+.hp-field{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0!important}
+@media(max-width:720px){.contact-row{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <nav class="nav"><div class="container nav-inner"><a class="logo" href="index.html"><span class="mark">H</span>Housio</a><div class="nav-links"><a href="how-it-works.html">How it works</a><a href="bend-local-pros.html">Directory</a><a href="for-local-pros.html">For pros</a><a class="nav-cta" href="index.html#categories">Post a request</a></div></div></nav>
 <main>
   <section class="hero"><div class="container hero-grid"><div><span class="eyebrow">Contact</span><h1>Need help with Housio in Bend?</h1><p class="lead">Use the fastest path below for homeowner requests, local pro onboarding, directory claims, and support questions.</p><div class="cta-row"><a class="btn" href="index.html#categories">Post a request</a><a class="btn secondary" href="index.html?join=pro&utm=contact">Join as a pro</a></div></div><aside class="hero-card"><div class="quote"><strong>Email</strong><span><a href="mailto:hello@housioapp.com">hello@housioapp.com</a></span></div></aside></div></section>
   <section class="section"><div class="container"><div class="section-head"><span class="tag">Choose a path</span><h2>Get to the right place quickly.</h2></div><div class="grid"><div class="panel"><h3>Homeowners</h3><p>Post a request so Housio can capture the service, ZIP, and details needed for matching.</p><p><a class="btn secondary" href="index.html#categories">Start request</a></p></div><div class="panel"><h3>Local pros</h3><p>Create a free pro account, choose your services, and claim or add your Bend business profile.</p><p><a class="btn secondary" href="index.html?join=pro&utm=contact-card">Join free</a></p></div><div class="panel"><h3>Directory claims</h3><p>If your business is listed, use the claim link on the directory listing so Housio can review it.</p><p><a class="btn secondary" href="bend-local-pros.html">Open directory</a></p></div></div></div></section>
+  <section class="section alt"><div class="container"><div class="section-head"><span class="tag">Send a note</span><h2>One form for support, claims, and launch questions.</h2><p class="sub">Messages go into the Housio admin dashboard after the latest Supabase schema is deployed.</p></div><div class="panel"><form class="contact-form" id="contactForm"><div class="contact-row"><div class="contact-field"><label for="ctName">Name</label><input id="ctName" autocomplete="name" placeholder="Jane Smith"></div><div class="contact-field"><label for="ctEmail">Email</label><input id="ctEmail" type="email" autocomplete="email" placeholder="you@email.com"></div></div><div class="contact-row"><div class="contact-field"><label for="ctRole">I am a</label><select id="ctRole"><option value="homeowner">Homeowner</option><option value="pro">Local pro</option><option value="directory">Directory listing owner</option><option value="partner">Partner</option></select></div><div class="contact-field"><label for="ctTopic">Topic</label><select id="ctTopic"><option>Project help</option><option>Pro onboarding</option><option>Directory claim</option><option>Safety or payment question</option><option>Partnership</option><option>Other</option></select></div></div><div class="contact-field"><label for="ctMessage">Message</label><textarea id="ctMessage" placeholder="Tell us what you need help with. Include the service, ZIP code, or business name when useful."></textarea></div><div class="hp-field" aria-hidden="true"><label for="ctWebsite">Website</label><input id="ctWebsite" tabindex="-1" autocomplete="off"></div><button class="btn" id="ctSubmit" type="submit">Send message</button><p class="form-status" id="ctStatus"></p><p class="form-note">Do not send passwords, Social Security numbers, or full payment card details.</p></form></div></div></section>
   <section class="section alt"><div class="container"><div class="section-head"><span class="tag">Support notes</span><h2>What to include in an email.</h2><p class="sub">Send the account email you used, the service category, your ZIP code, and any relevant listing or project details. Do not email passwords or full payment card details.</p></div></div></section>
 </main>
 <footer><div class="container">Housio - Contact Bend home services support</div></footer>
+<script>
+const SUPABASE_URL = 'https://tsyibysbdhvftlayejad.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzeWlieXNiZGh2ZnRsYXllamFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0ODg1NzksImV4cCI6MjA5NzA2NDU3OX0.cGNkeU9Ta34mtUxOeC45QWq2hO8LGED29XleMsfzIAc';
+const sb = window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+const val = id => (document.getElementById(id)?.value || '').trim();
+const statusEl = document.getElementById('ctStatus');
+document.getElementById('contactForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (val('ctWebsite')) return;
+  const payload = {
+    name: val('ctName'),
+    email: val('ctEmail').toLowerCase(),
+    role: val('ctRole'),
+    topic: val('ctTopic'),
+    message: val('ctMessage'),
+    path: location.pathname
+  };
+  if (!payload.email || !payload.message) {
+    statusEl.textContent = 'Add your email and a short message.';
+    return;
+  }
+  const btn = document.getElementById('ctSubmit');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+  let saved = false;
+  if (sb) {
+    try {
+      const { error } = await sb.from('contact_submissions').insert(payload);
+      saved = !error;
+    } catch (e) {}
+  }
+  btn.textContent = 'Send message';
+  btn.disabled = false;
+  if (saved) {
+    document.getElementById('contactForm').reset();
+    statusEl.textContent = 'Message sent. Housio will follow up by email.';
+  } else {
+    const subject = encodeURIComponent(`Housio contact: ${payload.topic}`);
+    const body = encodeURIComponent(`${payload.message}\n\nName: ${payload.name}\nRole: ${payload.role}\nEmail: ${payload.email}`);
+    statusEl.innerHTML = `Could not save the form yet. Email <a href="mailto:hello@housioapp.com?subject=${subject}&body=${body}">hello@housioapp.com</a>.`;
+  }
+});
+</script>
 </body>
 </html>

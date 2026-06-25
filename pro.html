@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pro Profile — Housio</title>
 <meta name="description" content="View a verified local pro's profile, services, ratings, and reviews on Housio.">
+<link rel="canonical" href="https://housioapp.com/pro.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -77,8 +78,8 @@ nav{background:#fff;border-bottom:1px solid var(--gray-mid)}
 
 <script>
 // Keep these in sync with index.html (same anon key is safe client-side).
-const SUPABASE_URL  = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL  = 'https://tsyibysbdhvftlayejad.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzeWlieXNiZGh2ZnRsYXllamFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0ODg1NzksImV4cCI6MjA5NzA2NDU3OX0.cGNkeU9Ta34mtUxOeC45QWq2hO8LGED29XleMsfzIAc';
 const CONFIGURED = !SUPABASE_URL.startsWith('YOUR_') && !SUPABASE_ANON.startsWith('YOUR_');
 const sb = CONFIGURED ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
 

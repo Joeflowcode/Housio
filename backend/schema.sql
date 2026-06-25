@@ -132,6 +132,19 @@ create table if not exists site_events (
   created_at  timestamptz default now()
 );
 
+create table if not exists contact_submissions (
+  id         uuid primary key default uuid_generate_v4(),
+  name       text,
+  email      text,
+  role       text,
+  topic      text,
+  message    text not null,
+  path       text,
+  user_id    uuid references profiles(id) on delete set null,
+  created_at timestamptz default now(),
+  resolved_at timestamptz
+);
+
 -- ════════════════════════════════════════════════════════════════
 --  INDEXES — the #1 thing that lets you scale.
 --  Postgres does NOT auto-index foreign keys. Index everything you
@@ -156,6 +169,8 @@ create index if not exists idx_subs_pro          on subscriptions(pro_id);
 create index if not exists idx_site_events_name_created on site_events(event_name, created_at desc);
 create index if not exists idx_site_events_user_created on site_events(user_id, created_at desc);
 create index if not exists idx_site_events_path_created on site_events(path, created_at desc);
+create index if not exists idx_contact_submissions_created on contact_submissions(created_at desc);
+create index if not exists idx_contact_submissions_resolved on contact_submissions(resolved_at, created_at desc);
 
 -- ════════════════════════════════════════════════════════════════
 --  ROW LEVEL SECURITY — each user only touches their own data.
@@ -170,6 +185,7 @@ alter table leads         enable row level security;
 alter table reviews       enable row level security;
 alter table subscriptions enable row level security;
 alter table site_events   enable row level security;
+alter table contact_submissions enable row level security;
 
 -- Security-definer helper avoids recursive RLS checks when admin policies
 -- need to inspect the signed-in user's profile row.
@@ -268,6 +284,17 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 do $$ begin
   create policy "site_events admin read" on site_events for select using ( is_admin() );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "contact_submissions visitor insert" on contact_submissions for insert with check (
+    user_id is null or user_id = (select auth.uid())
+  );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "contact_submissions admin read" on contact_submissions for select using ( is_admin() );
+exception when duplicate_object then null; end $$;
+do $$ begin
+  create policy "contact_submissions admin update" on contact_submissions for update using ( is_admin() );
 exception when duplicate_object then null; end $$;
 
 -- ════════════════════════════════════════════════════════════════

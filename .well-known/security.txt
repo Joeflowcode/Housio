@@ -1,0 +1,4 @@
+Contact: mailto:hello@housioapp.com
+Preferred-Languages: en
+Canonical: https://housioapp.com/.well-known/security.txt
+Policy: https://housioapp.com/contact.html
